@@ -27,18 +27,18 @@ This app allows dog-lovers to find dogs to pet near them, and also allows users 
 
 **Required Must-have Stories**
 
-* Users can log in using OAuth
+* Users can log in
 * User can log out
 * User can sign up to create a new account
 * Users can drop a tag at their current location that includes a timestamp, photo, and a direction of travel
 * Users can update tags dropped by others
 * Pinch to zoom in/out on the map gesture implemented
     * Tags within a 2 mile radius are present/visible on the map view
-* Users are notified when a tag within 2 miles of their current location is posted
+*
 
 **Optional Nice-to-have Stories**
-
-* User can change their notification radius
+* Users are notified when a tag within 2 miles of their current location is posted
+    * User can change their notification radius
     * Notification radius is made visible on the map 
 * All tags that fit in the map view are visible
 * Users can connect with each other receive a notification every time a user in your network drops a tag
@@ -48,7 +48,7 @@ This app allows dog-lovers to find dogs to pet near them, and also allows users 
 ### 2. Screen Archetypes
 
 * Log In
-   * Users can log in using OAuth
+   * Users can log in
 * Sign Up
    * User can sign up to create a new account
 * Map View
