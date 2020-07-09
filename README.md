@@ -89,10 +89,43 @@ This app allows dog-lovers to find dogs to pet near them, and also allows users 
 ### [BONUS] Interactive Prototype
 
 ## Schema 
-[This section will be completed in Unit 9]
 ### Models
-[Add table of models]
+**User**
+| Property | Type | Description |
+|----------|------|-------------|
+|username |String|username for user to login|
+|password|String|password for user to login|
+|createdAt|DateTime|date when post is created (default field)|
+|updatedAt|DateTime|date when post is last updated (default field)|
+|Radius|Number|radius within which user gets notified for tags dropped (stretch goal)|
+
+**Tag**
+| Property | Type | Description |
+|----------|------|-------------|
+|objectId|String|unique id for the user that dropped the tag (default field)|
+|location|Location|current location of the user|
+|createdAt|DateTime|date when post is created (default field)|
+|updatedAt|DateTime|date when post is last updated (default field)|
+|image|File|image of the dog that is being tagged|
+|name|String|name of the dog being tagged (optional)|
+|type|String|type/breed of the dog being tagged (optional)|
+|direction|String|the direction of travel of the dog being tagged|
+|expired|Boolean|true if the tag no longer accurately describes the dog's location (as determined by other users)|
+
+
 ### Networking
-- [Add list of network requests by screen ]
+* Log In
+   * (Get/REQUEST) authenticate username and password
+* Sign Up
+   * (Create/POST) new user object
+* Map View
+    * (Update/POST) update location or expiration status on a tag
+* Profile
+    * (Update/POST) update radius preference
+* Drop/Compose Tag
+    * (Create/POST) create a new tag
+    * (Get/REQUEST) user's current location
+    * (Delete) delete a tag
+    
 - [Create basic snippets for each Parse network request]
 - [OPTIONAL: List endpoints if using existing API such as Yelp]
