@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
 import android.app.Dialog;
@@ -13,18 +12,14 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.pawsibilities.MainActivity;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.databinding.FragmentMapsBinding;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -38,7 +33,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -51,23 +45,14 @@ import static com.google.android.gms.location.LocationServices.getFusedLocationP
 public class MapsFragment extends Fragment {
 
     private static final String TAG = "MapsFragment";
-    private FragmentMapsBinding mapsBinding;
-
     private SupportMapFragment mapFragment;
     private GoogleMap map;
     private LocationRequest mLocationRequest;
-    Location mCurrentLocation;
-    private long UPDATE_INTERVAL = 60000;  /* 60 secs */
-    private long FASTEST_INTERVAL = 5000; /* 5 secs */
+    private Location mCurrentLocation;
+    private final long UPDATE_INTERVAL_IN_SEC = 60000;  /* 60 secs */
+    private final long FASTEST_INTERVAL_IN_SEC = 5000; /* 5 secs */
 
     private final static String KEY_LOCATION = "location";
-
-    /*
-     * Define a request code to send to Google Play services This code is
-     * returned in Activity.onActivityResult
-     */
-    private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 8000;
-
 
 
     @Nullable
@@ -100,7 +85,6 @@ public class MapsFragment extends Fragment {
         } else {
             Toast.makeText(getContext(), "Error - Map Fragment was null!!", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     protected void loadMap(GoogleMap googleMap) {
@@ -146,22 +130,22 @@ public class MapsFragment extends Fragment {
                 });
     }
 
-    /*
-     * Called when the Activity becomes visible.
-     */
-    @Override
-    public void onStart() {
-        super.onStart();
+    public void onLocationChanged(Location location) {
+        // GPS may be turned off
+        if (location == null) {
+            return;
+        }
+
+        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(13);
+        map.moveCamera(center);
+        map.animateCamera(zoom);
     }
 
-    /*
-     * Called when the Activity is no longer visible.
-     */
-    @Override
-    public void onStop() {
-        super.onStop();
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
+        super.onSaveInstanceState(savedInstanceState);
     }
-
 
 
     @Override
@@ -169,7 +153,6 @@ public class MapsFragment extends Fragment {
         super.onResume();
 
         // Display the connection status
-
         if (mCurrentLocation != null) {
             Toast.makeText(getContext(), "GPS location was found!", Toast.LENGTH_SHORT).show();
             LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
@@ -185,8 +168,8 @@ public class MapsFragment extends Fragment {
     protected void startLocationUpdates() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_SEC);
+        mLocationRequest.setFastestInterval(FASTEST_INTERVAL_IN_SEC);
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(mLocationRequest);
@@ -195,70 +178,21 @@ public class MapsFragment extends Fragment {
         SettingsClient settingsClient = LocationServices.getSettingsClient(getContext());
         settingsClient.checkLocationSettings(locationSettingsRequest);
         //noinspection MissingPermission
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling ActivityCompat#requestPermissions
+            // to request the missing permissions, and then overriding
+            // public void onRequestPermissionsResult(int requestCode, String[] permissions,
             //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+            // to handle the case where the user grants the permission.
             return;
         }
+
         getFusedLocationProviderClient(getContext()).requestLocationUpdates(mLocationRequest, new LocationCallback() {
                     @Override
                     public void onLocationResult(LocationResult locationResult) {
                         onLocationChanged(locationResult.getLastLocation());
                     }
-                },
-                Looper.myLooper());
-    }
-
-    public void onLocationChanged(Location location) {
-        // GPS may be turned off
-        if (location == null) {
-            return;
-        }
-
-        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
-        CameraUpdate zoom = CameraUpdateFactory.zoomTo(13);
-        map.moveCamera(center);
-        map.animateCamera(zoom);
-
-    }
-
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    // Define a DialogFragment that displays the error dialog
-    public static class ErrorDialogFragment extends DialogFragment {
-
-        // Global field to contain the error dialog
-        private Dialog mDialog;
-
-        // Default constructor. Sets the dialog field to null
-        public ErrorDialogFragment() {
-            super();
-            mDialog = null;
-        }
-
-        // Set the dialog to display
-        public void setDialog(Dialog dialog) {
-            mDialog = dialog;
-        }
-
-        // Return a Dialog to the DialogFragment.
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            return mDialog;
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mapsBinding = null;
+                }, Looper.myLooper());
     }
 }
