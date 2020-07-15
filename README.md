@@ -34,7 +34,6 @@ This app allows dog-lovers to find dogs to pet near them, and also allows users 
 * Users can update tags dropped by others
 * Pinch to zoom in/out on the map gesture implemented
     * Tags within a 2 mile radius are present/visible on the map view
-*
 
 **Optional Nice-to-have Stories**
 * Users are notified when a tag within 2 miles of their current location is posted
@@ -84,10 +83,6 @@ This app allows dog-lovers to find dogs to pet near them, and also allows users 
 [Add picture of your hand sketched wireframes in this section]
 <img src="https://github.com/ushanakg/Pawsibilities/blob/master/wireframe.jpg" width=600>
 
-### [BONUS] Digital Wireframes & Mockups
-
-### [BONUS] Interactive Prototype
-
 ## Schema 
 ### Models
 **User**
@@ -126,6 +121,3 @@ This app allows dog-lovers to find dogs to pet near them, and also allows users 
     * (Create/POST) create a new tag
     * (Get/REQUEST) user's current location
     * (Delete) delete a tag
-    
-- [Create basic snippets for each Parse network request]
-- [OPTIONAL: List endpoints if using existing API such as Yelp]
