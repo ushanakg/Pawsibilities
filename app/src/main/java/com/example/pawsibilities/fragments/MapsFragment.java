@@ -57,7 +57,7 @@ import permissions.dispatcher.RuntimePermissions;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 @RuntimePermissions
-public class MapsFragment extends Fragment {
+public class MapsFragment extends Fragment implements GoogleMap.OnMapLongClickListener {
 
     private static final String TAG = "MapsFragment";
     private SupportMapFragment mapFragment;
@@ -112,15 +112,20 @@ public class MapsFragment extends Fragment {
         map = googleMap;
         if (map != null) {
             // Map is ready
-            Toast.makeText(getContext(), "Map Fragment was loaded properly!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getContext(), "Map Fragment was loaded properly!", Toast.LENGTH_SHORT).show();
             MapsFragmentPermissionsDispatcher.getMyLocationWithPermissionCheck(this);
             MapsFragmentPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
 
             map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
                 public boolean onMarkerClick(Marker marker) {
                     return markerClicked(marker);
                 }
             });
+            map.setOnMapLongClickListener(this);
+
+            //getMyLocation();
+            //centerOnCurrentLocation();
 
         } else {
             Toast.makeText(getContext(), "Error - Map was null!!", Toast.LENGTH_SHORT).show();
@@ -149,10 +154,7 @@ public class MapsFragment extends Fragment {
 
     private void displayTags() {
         BitmapDescriptor defaultMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
-<<<<<<< HEAD
 
-=======
->>>>>>> click handler added to markers, behavior on click not implemented
         for (Tag t : tags) {
             ParseGeoPoint pos = t.getLocation();
             Marker mapMarker = map.addMarker(new MarkerOptions()
@@ -166,9 +168,17 @@ public class MapsFragment extends Fragment {
     }
 
     private boolean markerClicked(Marker marker) {
-        // TODO open modal overlay with Tag information
-        return false;
+        // TODO open modal overlay with Tag information (editable)
+        Log.i(TAG, "marker clicked");
+        return true;
     }
+
+    @Override
+    public void onMapLongClick(LatLng point) {
+        // TODO open tag creation modal overlay (same as in markerClicked()?)
+        Log.i(TAG, "long press registered");
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -188,7 +198,7 @@ public class MapsFragment extends Fragment {
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null) {
-                            onLocationChanged(location);
+                            mCurrentLocation = location;
                         }
                     }
                 })
@@ -201,13 +211,12 @@ public class MapsFragment extends Fragment {
                 });
     }
 
-    public void onLocationChanged(Location location) {
-        // GPS may be turned off
-        if (location == null) {
+    private void centerOnCurrentLocation() {
+        if (mCurrentLocation == null) {
             return;
         }
 
-        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
+        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(13);
         map.moveCamera(center);
         map.animateCamera(zoom);
@@ -224,16 +233,16 @@ public class MapsFragment extends Fragment {
 
         // Display the connection status
         if (mCurrentLocation != null) {
-            Toast.makeText(getContext(), "GPS location was found!", Toast.LENGTH_SHORT).show();
-            LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
-            map.animateCamera(cameraUpdate);
+            //Toast.makeText(getContext(), "GPS location was found!", Toast.LENGTH_SHORT).show();
+            centerOnCurrentLocation();
         } else {
-            Toast.makeText(getContext(), "Current location was null, enable GPS on emulator!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getContext(), "Current location was null, enable GPS on emulator!", Toast.LENGTH_SHORT).show();
         }
         MapsFragmentPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
     }
 
+
+    // periodically checks for and updates the user's current location
     @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
     protected void startLocationUpdates() {
         mLocationRequest = new LocationRequest();
@@ -261,7 +270,8 @@ public class MapsFragment extends Fragment {
         getFusedLocationProviderClient(getContext()).requestLocationUpdates(mLocationRequest, new LocationCallback() {
                     @Override
                     public void onLocationResult(LocationResult locationResult) {
-                        onLocationChanged(locationResult.getLastLocation());
+                        mCurrentLocation = locationResult.getLastLocation();
+                        centerOnCurrentLocation();
                     }
                 }, Looper.myLooper());
     }
