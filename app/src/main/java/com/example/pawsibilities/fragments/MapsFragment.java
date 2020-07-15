@@ -116,6 +116,12 @@ public class MapsFragment extends Fragment {
             MapsFragmentPermissionsDispatcher.getMyLocationWithPermissionCheck(this);
             MapsFragmentPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
 
+            map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                public boolean onMarkerClick(Marker marker) {
+                    return markerClicked(marker);
+                }
+            });
+
         } else {
             Toast.makeText(getContext(), "Error - Map was null!!", Toast.LENGTH_SHORT).show();
         }
@@ -142,7 +148,7 @@ public class MapsFragment extends Fragment {
     }
 
     private void displayTags() {
-        BitmapDescriptor defaultMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+        BitmapDescriptor defaultMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
         for (Tag t : tags) {
             ParseGeoPoint pos = t.getLocation();
             Marker mapMarker = map.addMarker(new MarkerOptions()
@@ -153,6 +159,11 @@ public class MapsFragment extends Fragment {
             mapMarker.setTag(t);
             markers.add(mapMarker);
         }
+    }
+
+    private boolean markerClicked(Marker marker) {
+        // TODO open modal overlay with Tag information
+        return false;
     }
 
     @Override
