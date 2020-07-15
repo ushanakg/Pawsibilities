@@ -149,7 +149,10 @@ public class MapsFragment extends Fragment {
 
     private void displayTags() {
         BitmapDescriptor defaultMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
+<<<<<<< HEAD
 
+=======
+>>>>>>> click handler added to markers, behavior on click not implemented
         for (Tag t : tags) {
             ParseGeoPoint pos = t.getLocation();
             Marker mapMarker = map.addMarker(new MarkerOptions()
