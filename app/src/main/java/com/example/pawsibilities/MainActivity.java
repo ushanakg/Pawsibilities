@@ -10,6 +10,7 @@ import android.view.MenuItem;
 
 import com.example.pawsibilities.databinding.ActivityMainBinding;
 import com.example.pawsibilities.fragments.MapsFragment;
+import com.example.pawsibilities.fragments.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
                 switch(item.getItemId()) {
                     case R.id.action_profile:
                         //TODO: replace this with profile fragment
-                        fragment = new MapsFragment();
+                        fragment = new ProfileFragment();
                         break;
                     case R.id.action_map:
                     default:
