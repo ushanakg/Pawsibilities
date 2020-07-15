@@ -16,9 +16,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.pawsibilities.R;
+import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentMapsBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -32,9 +34,22 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.parse.FindCallback;
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseQuery;
+import com.parse.SaveCallback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
@@ -49,6 +64,8 @@ public class MapsFragment extends Fragment {
     private GoogleMap map;
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
+    private List<Tag> tags;
+    private List<Marker> markers;
     private final long UPDATE_INTERVAL_IN_SEC = 60000;  /* 60 secs */
     private final long FASTEST_INTERVAL_IN_SEC = 5000; /* 5 secs */
 
@@ -74,6 +91,8 @@ public class MapsFragment extends Fragment {
             mCurrentLocation = savedInstanceState.getParcelable(KEY_LOCATION);
         }
 
+        tags = new ArrayList<>();
+        markers = new ArrayList<>();
         mapFragment = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map));
         if (mapFragment != null) {
             mapFragment.getMapAsync(new OnMapReadyCallback() {
@@ -85,6 +104,8 @@ public class MapsFragment extends Fragment {
         } else {
             Toast.makeText(getContext(), "Error - Map Fragment was null!!", Toast.LENGTH_SHORT).show();
         }
+
+        queryTags();
     }
 
     protected void loadMap(GoogleMap googleMap) {
@@ -94,8 +115,43 @@ public class MapsFragment extends Fragment {
             Toast.makeText(getContext(), "Map Fragment was loaded properly!", Toast.LENGTH_SHORT).show();
             MapsFragmentPermissionsDispatcher.getMyLocationWithPermissionCheck(this);
             MapsFragmentPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
+
         } else {
             Toast.makeText(getContext(), "Error - Map was null!!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void queryTags() {
+        ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
+        //query.include(Tag.KEY_DROPPED_BY);
+        query.include(Tag.KEY_UPDATED_AT);
+        query.setLimit(20);
+        query.findInBackground(new FindCallback<Tag>() {
+            @Override
+            public void done(List<Tag> queried, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "issue with getting Tags", e);
+                    return;
+                }
+
+                tags.addAll(queried);
+                displayTags();
+
+            }
+        });
+    }
+
+    private void displayTags() {
+        BitmapDescriptor defaultMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+        for (Tag t : tags) {
+            ParseGeoPoint pos = t.getLocation();
+            Marker mapMarker = map.addMarker(new MarkerOptions()
+                    .position(new LatLng(pos.getLatitude(), pos.getLongitude()))
+                    .title(t.getName())
+                    .icon(defaultMarker));
+
+            mapMarker.setTag(t);
+            markers.add(mapMarker);
         }
     }
 
@@ -146,7 +202,6 @@ public class MapsFragment extends Fragment {
         savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
         super.onSaveInstanceState(savedInstanceState);
     }
-
 
     @Override
     public void onResume() {
