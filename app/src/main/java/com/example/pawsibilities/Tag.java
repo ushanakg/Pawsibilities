@@ -2,6 +2,7 @@ package com.example.pawsibilities;
 
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
@@ -13,10 +14,11 @@ public class Tag extends ParseObject {
     private static final String TAG = "Tag";
     public static final String KEY_NAME = "name";
     public static final String KEY_PHOTO = "photo";
-    public static final String KEY_CREATED_AT = "createdAt";
+    public static final String KEY_UPDATED_AT = "updatedAt";
     public static final String KEY_DROPPED_BY = "droppedBy";
     public static final String KEY_DIRECTION = "direction";
     public static final String KEY_ACTIVE = "active";
+    public static final String KEY_LOCATION = "location";
 
     public Tag() {
         //required default constructor
@@ -36,6 +38,10 @@ public class Tag extends ParseObject {
 
     public String getDirection() {
         return getString(KEY_DIRECTION);
+    }
+
+    public ParseGeoPoint getLocation() {
+        return getParseGeoPoint(KEY_LOCATION);
     }
 
     public Boolean getActive() {
@@ -62,4 +68,7 @@ public class Tag extends ParseObject {
         put(KEY_ACTIVE, status);
     }
 
+    public void setLocation(ParseGeoPoint location) {
+        put(KEY_LOCATION, location);
+    }
 }
