@@ -149,6 +149,7 @@ public class MapsFragment extends Fragment {
 
     private void displayTags() {
         BitmapDescriptor defaultMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
+
         for (Tag t : tags) {
             ParseGeoPoint pos = t.getLocation();
             Marker mapMarker = map.addMarker(new MarkerOptions()
