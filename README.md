@@ -8,6 +8,8 @@ Original App Design Project - README
 1. [Product Spec](#Product-Spec)
 1. [Wireframes](#Wireframes)
 2. [Schema](#Schema)
+2. [Developer](#Developer)
+2. [Tester](#Tester)
 
 ## Overview
 ### Description
