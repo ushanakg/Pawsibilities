@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -41,6 +42,8 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +54,7 @@ import permissions.dispatcher.RuntimePermissions;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 @RuntimePermissions
-public class MapsFragment extends Fragment implements GoogleMap.OnMapLongClickListener {
+public class MapsFragment extends Fragment implements CreateTagDialogFragment.CreateTagDialogListener, GoogleMap.OnMapLongClickListener {
 
     private static final String TAG = "MapsFragment";
     private SupportMapFragment mapFragment;
@@ -60,7 +63,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapLongClickLi
     private Location mCurrentLocation;
     private List<Tag> tags;
     private List<Marker> markers;
-    private BitmapDescriptor defaultMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
+    private BitmapDescriptor defaultMarker;
     private final long UPDATE_INTERVAL_IN_SEC = 60000;  /* 60 secs */
     private final long FASTEST_INTERVAL_IN_SEC = 5000; /* 5 secs */
 
@@ -88,6 +91,8 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapLongClickLi
 
         tags = new ArrayList<>();
         markers = new ArrayList<>();
+        defaultMarker  = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
+
         mapFragment = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map));
         if (mapFragment != null) {
             mapFragment.getMapAsync(new OnMapReadyCallback() {
@@ -170,15 +175,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapLongClickLi
     public void onMapLongClick(LatLng point) {
         Tag newTag = new Tag();
         newTag.setLocation(new ParseGeoPoint(point.latitude, point.longitude));
-
-        Marker newMarker = map.addMarker(new MarkerOptions()
-                .position(point)
-                .icon(defaultMarker));
-        newMarker.setTag(newTag);
-
-        //openCreateTagDialog(newTag);
-        // how to handle submit/cancel/delete of create/edit in same overlay?
-        Log.i(TAG, "long press registered");
+        openCreateTagDialog(newTag);
     }
 
     private void openEditTagDialog(Tag tag) {
@@ -187,10 +184,37 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapLongClickLi
     }
 
     private void openCreateTagDialog(Tag tag) {
+        FragmentManager fm = getFragmentManager();
         CreateTagDialogFragment createTagDialogFragment = CreateTagDialogFragment.newInstance(tag);
-        createTagDialogFragment.show(getChildFragmentManager(), "CreateTagDialogFragment");
+        createTagDialogFragment.setTargetFragment(this, 200);
+        createTagDialogFragment.show(fm, "CreateTagDialogFragment");
     }
 
+    @Override
+    public void onFinishCreateDialog(Tag newTag) {
+        ParseGeoPoint point = newTag.getLocation();
+        newTag.setDroppedBy(ParseUser.getCurrentUser());
+
+        Marker newMarker = map.addMarker(new MarkerOptions()
+                .position(new LatLng(point.getLatitude(), point.getLongitude()))
+                .icon(defaultMarker));
+        newMarker.setTag(newTag);
+
+        tags.add(newTag);
+        markers.add(newMarker);
+
+        newTag.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Toast.makeText(getContext(), "Couldn't create tag", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "save in background for new tag failed", e);
+                } else {
+                    Toast.makeText(getContext(), "Created!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
