@@ -121,3 +121,12 @@ This app allows dog-lovers to find dogs to pet near them, and also allows users 
     * (Create/POST) create a new tag
     * (Get/REQUEST) user's current location
     * (Delete) delete a tag
+
+### Developer
+Pawsibilities is built using Gradle 6.1.1 with Java 1.8 or Java 11.
+- To invoke a build and run tests: ./gradlew build
+- To skip tests: ./gradlew build -x test
+Pawsibilities is contained in a singular module:
+- pawsibilities-app contains the utility classes needed for the app's functionality
+
+### Tester
