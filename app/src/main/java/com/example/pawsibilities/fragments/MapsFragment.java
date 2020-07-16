@@ -64,6 +64,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
     private List<Tag> tags;
     private List<Marker> markers;
     private BitmapDescriptor defaultMarker;
+
     private final long UPDATE_INTERVAL_IN_SEC = 60000;  /* 60 secs */
     private final long FASTEST_INTERVAL_IN_SEC = 5000; /* 5 secs */
 
@@ -175,6 +176,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
     public void onMapLongClick(LatLng point) {
         Tag newTag = new Tag();
         newTag.setLocation(new ParseGeoPoint(point.latitude, point.longitude));
+
         openCreateTagDialog(newTag);
     }
 
@@ -215,6 +217,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
             }
         });
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

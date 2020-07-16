@@ -18,9 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentCreateTagBinding;
 
@@ -62,6 +60,7 @@ public class CreateTagDialogFragment extends DialogFragment {
         // Inflate the layout for this fragment
         binding = FragmentCreateTagBinding.inflate(inflater, container, false);
         return binding.getRoot();
+
     }
 
     @Override
@@ -140,5 +139,6 @@ public class CreateTagDialogFragment extends DialogFragment {
     // Defines the listener interface
     public interface CreateTagDialogListener {
         void onFinishCreateDialog(Tag newTag);
+
     }
 }
