@@ -3,11 +3,9 @@ package com.example.pawsibilities.fragments;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -16,12 +14,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
-import com.example.pawsibilities.databinding.FragmentMapsBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -42,11 +38,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.parse.FindCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
-import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +60,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapLongClickLi
     private Location mCurrentLocation;
     private List<Tag> tags;
     private List<Marker> markers;
+    private BitmapDescriptor defaultMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
     private final long UPDATE_INTERVAL_IN_SEC = 60000;  /* 60 secs */
     private final long FASTEST_INTERVAL_IN_SEC = 5000; /* 5 secs */
 
@@ -153,7 +148,6 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapLongClickLi
     }
 
     private void displayTags() {
-        BitmapDescriptor defaultMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
 
         for (Tag t : tags) {
             ParseGeoPoint pos = t.getLocation();
@@ -168,15 +162,33 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapLongClickLi
     }
 
     private boolean markerClicked(Marker marker) {
-        // TODO open modal overlay with Tag information (editable)
-        Log.i(TAG, "marker clicked");
+        openEditTagDialog((Tag) marker.getTag());
         return true;
     }
 
     @Override
     public void onMapLongClick(LatLng point) {
-        // TODO open tag creation modal overlay (same as in markerClicked()?)
+        Tag newTag = new Tag();
+        newTag.setLocation(new ParseGeoPoint(point.latitude, point.longitude));
+
+        Marker newMarker = map.addMarker(new MarkerOptions()
+                .position(point)
+                .icon(defaultMarker));
+        newMarker.setTag(newTag);
+
+        //openCreateTagDialog(newTag);
+        // how to handle submit/cancel/delete of create/edit in same overlay?
         Log.i(TAG, "long press registered");
+    }
+
+    private void openEditTagDialog(Tag tag) {
+        EditTagDialogFragment editTagDialogFragment = EditTagDialogFragment.newInstance(tag);
+        editTagDialogFragment.show(getChildFragmentManager(), "EditTagDialogFragment");
+    }
+
+    private void openCreateTagDialog(Tag tag) {
+        CreateTagDialogFragment createTagDialogFragment = CreateTagDialogFragment.newInstance(tag);
+        createTagDialogFragment.show(getChildFragmentManager(), "CreateTagDialogFragment");
     }
 
 
