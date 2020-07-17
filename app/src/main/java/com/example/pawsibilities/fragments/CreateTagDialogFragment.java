@@ -3,6 +3,7 @@ package com.example.pawsibilities.fragments;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -18,9 +19,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 
+import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentCreateTagBinding;
+import com.parse.ParseGeoPoint;
 
 import java.io.File;
 
@@ -30,8 +34,10 @@ import static android.app.Activity.RESULT_OK;
 public class CreateTagDialogFragment extends DialogFragment {
 
     private static final String TAG = "CreateTagDialogFragment";
-    public static final String KEY_TAG = "Tag";
+    private static final String KEY_TAG = "Tag";
+    private static final String KEY_LOCATION = "Location";
     private FragmentCreateTagBinding binding;
+    private ParseGeoPoint userLocation;
     private Tag tag;
 
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 23;
@@ -42,10 +48,11 @@ public class CreateTagDialogFragment extends DialogFragment {
         // Required empty public constructor
     }
 
-    public static CreateTagDialogFragment newInstance(Tag tag) {
+    public static CreateTagDialogFragment newInstance(Tag tag, Location location) {
         CreateTagDialogFragment fragment = new CreateTagDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(KEY_TAG, tag);
+        args.putParcelable(KEY_LOCATION, location);
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,6 +70,8 @@ public class CreateTagDialogFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         if (getArguments() != null) {
             this.tag = getArguments().getParcelable(KEY_TAG);
+            Location l = getArguments().getParcelable(KEY_LOCATION);
+            this.userLocation = new ParseGeoPoint(l.getLatitude(), l.getLongitude());
         }
 
         binding.ivPhoto.setOnClickListener(new View.OnClickListener() {
@@ -71,14 +80,26 @@ public class CreateTagDialogFragment extends DialogFragment {
                 launchCamera();
             }
         });
+
+        if (userLocation.equals(tag.getLocation())) {
+            binding.tvDistance.setText("Your current location");
+        } else {
+            binding.tvDistance.setText(tag.distanceFrom(userLocation) + " miles away");
+        }
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.directions_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.spDirection.setAdapter(adapter);
+
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 tag.setName(binding.etName.getText().toString());
-                tag.setDirection(binding.etDirection.getText().toString());
+                tag.setDirection((String) binding.spDirection.getSelectedItem());
                 sendBackResult();
             }
         });
+
     }
 
     @Override
