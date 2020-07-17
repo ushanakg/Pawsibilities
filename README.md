@@ -132,3 +132,11 @@ Pawsibilities is contained in a singular module:
 - pawsibilities-app contains the utility classes needed for the app's functionality
 
 ### Tester
+In order to download and install Pawsibilities from Github you must first enable Developer Options on your phone.
+- Go to Settings > System > About phone.
+- Tap Software info > Build number.
+- Tap Build number seven times. You may also have to tap in your PIN for verification.
+- Go back to the Settings pane, where you will now find Developer options as an entry.
+- Tap it and toggle the switch on if it is not already.
+
+To install Pawsibilities, view this Github repository from your device. Under "Releases", click the link of the latest release to install that compiled APK. Navigate through any prompts asking you to confirm download and installation. 
