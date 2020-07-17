@@ -1,11 +1,14 @@
 package com.example.pawsibilities;
 
+import android.text.format.DateUtils;
+
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 
 @ParseClassName("Tag")
@@ -70,5 +73,18 @@ public class Tag extends ParseObject {
 
     public void setLocation(ParseGeoPoint location) {
         put(KEY_LOCATION, location);
+    }
+
+    // Get how long ago the tag was updated (indicates accuracy to user)
+    public String getRelativeTimeAgo() {
+        long dateMillis = getUpdatedAt().getTime();
+
+        return DateUtils.getRelativeTimeSpanString (dateMillis, System.currentTimeMillis(),0L).toString();
+    }
+
+    public String distanceFrom(ParseGeoPoint point) {
+        double dist = point.distanceInMilesTo(getLocation());
+        DecimalFormat df = new DecimalFormat("#.#");
+        return df.format(dist);
     }
 }
