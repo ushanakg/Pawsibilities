@@ -3,4 +3,16 @@
     <string name="google_maps_api_key">AIzaSyDuVh9ZaszyhzGn4_AwfClrzt-iEjg1Xeo</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="directions_array">
+        <item>In place</item>
+        <item>North</item>
+        <item>NW</item>
+        <item>West</item>
+        <item>SW</item>
+        <item>South</item>
+        <item>SE</item>
+        <item>East</item>
+        <item>NE</item>
+    </string-array>
 </resources>

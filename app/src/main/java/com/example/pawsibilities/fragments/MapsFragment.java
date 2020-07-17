@@ -186,13 +186,13 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
     }
 
     private void openEditTagDialog(Tag tag) {
-        EditTagDialogFragment editTagDialogFragment = EditTagDialogFragment.newInstance(tag);
+        EditTagDialogFragment editTagDialogFragment = EditTagDialogFragment.newInstance(tag, mCurrentLocation);
         editTagDialogFragment.show(getChildFragmentManager(), "EditTagDialogFragment");
     }
 
     private void openCreateTagDialog(Tag tag) {
         FragmentManager fm = getFragmentManager();
-        CreateTagDialogFragment createTagDialogFragment = CreateTagDialogFragment.newInstance(tag);
+        CreateTagDialogFragment createTagDialogFragment = CreateTagDialogFragment.newInstance(tag, mCurrentLocation);
         createTagDialogFragment.setTargetFragment(this, 200);
         createTagDialogFragment.show(fm, "CreateTagDialogFragment");
     }
