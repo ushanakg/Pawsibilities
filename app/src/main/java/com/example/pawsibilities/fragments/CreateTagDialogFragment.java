@@ -26,11 +26,7 @@ import java.io.File;
 
 import static android.app.Activity.RESULT_OK;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CreateTagDialogFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class CreateTagDialogFragment extends DialogFragment {
 
     private static final String TAG = "CreateTagDialogFragment";
@@ -60,7 +56,6 @@ public class CreateTagDialogFragment extends DialogFragment {
         // Inflate the layout for this fragment
         binding = FragmentCreateTagBinding.inflate(inflater, container, false);
         return binding.getRoot();
-
     }
 
     @Override
@@ -76,8 +71,6 @@ public class CreateTagDialogFragment extends DialogFragment {
                 launchCamera();
             }
         });
-        //if image taken, set it in tag
-
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -139,6 +132,5 @@ public class CreateTagDialogFragment extends DialogFragment {
     // Defines the listener interface
     public interface CreateTagDialogListener {
         void onFinishCreateDialog(Tag newTag);
-
     }
 }

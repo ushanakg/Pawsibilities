@@ -70,7 +70,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
 
     private final static String KEY_LOCATION = "location";
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -113,7 +112,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
         map = googleMap;
         if (map != null) {
             // Map is ready
-            //Toast.makeText(getContext(), "Map Fragment was loaded properly!", Toast.LENGTH_SHORT).show();
             MapsFragmentPermissionsDispatcher.getMyLocationWithPermissionCheck(this);
             MapsFragmentPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
 
@@ -125,9 +123,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
             });
             map.setOnMapLongClickListener(this);
 
-            //getMyLocation();
-            //centerOnCurrentLocation();
-
         } else {
             Toast.makeText(getContext(), "Error - Map was null!!", Toast.LENGTH_SHORT).show();
         }
@@ -135,7 +130,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
 
     private void queryTags() {
         ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
-        //query.include(Tag.KEY_DROPPED_BY);
         query.include(Tag.KEY_UPDATED_AT);
         query.setLimit(20);
         query.findInBackground(new FindCallback<Tag>() {
@@ -272,10 +266,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
 
         // Display the connection status
         if (mCurrentLocation != null) {
-            //Toast.makeText(getContext(), "GPS location was found!", Toast.LENGTH_SHORT).show();
             centerOnCurrentLocation();
-        } else {
-            //Toast.makeText(getContext(), "Current location was null, enable GPS on emulator!", Toast.LENGTH_SHORT).show();
         }
         MapsFragmentPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
     }
