@@ -66,14 +66,17 @@ public class EditTagDialogFragment extends DialogFragment {
 
         ParseFile profile = tag.getPhoto();
         if (profile != null) {
-            Glide.with(getContext()).load(profile.getUrl()).transform(new RoundedCorners(150)).into(binding.ivPhoto);
+            Glide.with(getContext()).load(profile.getUrl())
+                    .transform(new RoundedCorners(150))
+                    .into(binding.ivPhoto);
         }
 
         binding.tvName.setText(tag.getName());
         binding.tvTimeAgo.setText("Updated " + tag.getRelativeTimeAgo());
         binding.tvDistance.setText(tag.distanceFrom(userLocation) + " miles away");
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.directions_array, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.directions_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spDirection.setAdapter(adapter);
         binding.spDirection.setSelection(adapter.getPosition(tag.getDirection()));
@@ -102,9 +105,6 @@ public class EditTagDialogFragment extends DialogFragment {
             public void onClick(View view) {
                 tag.setName(binding.tvName.getText().toString());
                 tag.setDirection(binding.spDirection.getSelectedItem().toString());
-
-                //
-
                 tag.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
