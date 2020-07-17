@@ -119,6 +119,11 @@ public class EditTagDialogFragment extends DialogFragment {
                 });
             }
         });
+    }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }
