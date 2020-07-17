@@ -192,7 +192,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
 
     private void openCreateTagDialog(Tag tag) {
         FragmentManager fm = getFragmentManager();
-        CreateTagDialogFragment createTagDialogFragment = CreateTagDialogFragment.newInstance(tag);
+        CreateTagDialogFragment createTagDialogFragment = CreateTagDialogFragment.newInstance(tag, mCurrentLocation);
         createTagDialogFragment.setTargetFragment(this, 200);
         createTagDialogFragment.show(fm, "CreateTagDialogFragment");
     }
