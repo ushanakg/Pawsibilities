@@ -24,6 +24,7 @@ import android.widget.ArrayAdapter;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentCreateTagBinding;
+import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 
 import java.io.File;
@@ -87,7 +88,8 @@ public class CreateTagDialogFragment extends DialogFragment {
             binding.tvDistance.setText(tag.distanceFrom(userLocation) + " miles away");
         }
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.directions_array, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.directions_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spDirection.setAdapter(adapter);
 
@@ -95,6 +97,7 @@ public class CreateTagDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 tag.setName(binding.etName.getText().toString());
+                tag.setPhoto(new ParseFile(photoFile));
                 tag.setDirection((String) binding.spDirection.getSelectedItem());
                 sendBackResult();
             }
@@ -143,7 +146,6 @@ public class CreateTagDialogFragment extends DialogFragment {
         }
     }
 
-    // Call this method to send the data back to the parent fragment
     public void sendBackResult() {
         CreateTagDialogListener listener = (CreateTagDialogListener) getTargetFragment();
         listener.onFinishCreateDialog(tag);
@@ -153,5 +155,11 @@ public class CreateTagDialogFragment extends DialogFragment {
     // Defines the listener interface
     public interface CreateTagDialogListener {
         void onFinishCreateDialog(Tag newTag);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }
