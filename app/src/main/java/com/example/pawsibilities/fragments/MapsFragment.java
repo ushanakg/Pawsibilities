@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
+import com.example.pawsibilities.databinding.FragmentMapsBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -57,6 +58,7 @@ import static com.google.android.gms.location.LocationServices.getFusedLocationP
 public class MapsFragment extends Fragment implements CreateTagDialogFragment.CreateTagDialogListener, GoogleMap.OnMapLongClickListener {
 
     private static final String TAG = "MapsFragment";
+    private FragmentMapsBinding mapsBinding;
     private SupportMapFragment mapFragment;
     private GoogleMap map;
     private LocationRequest mLocationRequest;
@@ -75,8 +77,8 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
-        return inflater.inflate(R.layout.fragment_maps, container, false);
+        mapsBinding = FragmentMapsBinding.inflate(inflater, container, false);
+        return mapsBinding.getRoot();
     }
 
     @Override
@@ -104,6 +106,15 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
         } else {
             Toast.makeText(getContext(), "Error - Map Fragment was null!!", Toast.LENGTH_SHORT).show();
         }
+
+        mapsBinding.fabCreateTag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Tag newTag = new Tag();
+                newTag.setLocation(new ParseGeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
+                openCreateTagDialog(newTag);
+            }
+        });
 
         queryTags();
     }
