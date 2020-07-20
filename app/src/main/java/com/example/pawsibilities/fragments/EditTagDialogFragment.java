@@ -85,18 +85,7 @@ public class EditTagDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 tag.setActive(false);
-                tag.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e != null) {
-                            Toast.makeText(getContext(), "Unable to update", Toast.LENGTH_SHORT).show();
-                            Log.e(TAG, "Unable to mark tag outdated", e);
-                        } else {
-                            Toast.makeText(getContext(), "Updated!", Toast.LENGTH_SHORT).show();
-                            dismiss();
-                        }
-                    }
-                });
+                sendBackResult();
             }
         });
 
@@ -105,20 +94,20 @@ public class EditTagDialogFragment extends DialogFragment {
             public void onClick(View view) {
                 tag.setName(binding.tvName.getText().toString());
                 tag.setDirection(binding.spDirection.getSelectedItem().toString());
-                tag.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e != null) {
-                            Toast.makeText(getContext(), "Unable to update", Toast.LENGTH_SHORT).show();
-                            Log.e(TAG, "Unable to mark tag outdated", e);
-                        } else {
-                            Toast.makeText(getContext(), "Updated!", Toast.LENGTH_SHORT).show();
-                            dismiss();
-                        }
-                    }
-                });
+                sendBackResult();
             }
         });
+    }
+
+    public void sendBackResult() {
+        EditTagDialogFragment.EditTagDialogListener listener = (EditTagDialogFragment.EditTagDialogListener) getTargetFragment();
+        listener.onFinishEditDialog(tag);
+        dismiss();
+    }
+
+    // Defines the listener interface
+    public interface EditTagDialogListener {
+        void onFinishEditDialog(Tag newTag);
     }
 
     @Override
