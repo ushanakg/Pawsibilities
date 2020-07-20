@@ -55,7 +55,7 @@ import permissions.dispatcher.RuntimePermissions;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 @RuntimePermissions
-public class MapsFragment extends Fragment implements CreateTagDialogFragment.CreateTagDialogListener, GoogleMap.OnMapLongClickListener {
+public class MapsFragment extends Fragment implements CreateTagDialogFragment.CreateTagDialogListener, EditTagDialogFragment.EditTagDialogListener, GoogleMap.OnMapLongClickListener {
 
     private static final String TAG = "MapsFragment";
     private FragmentMapsBinding mapsBinding;
@@ -186,8 +186,10 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
     }
 
     private void openEditTagDialog(Tag tag) {
+        FragmentManager fm = getFragmentManager();
         EditTagDialogFragment editTagDialogFragment = EditTagDialogFragment.newInstance(tag, mCurrentLocation);
-        editTagDialogFragment.show(getChildFragmentManager(), "EditTagDialogFragment");
+        editTagDialogFragment.setTargetFragment(this, 300);
+        editTagDialogFragment.show(fm, "EditTagDialogFragment");
     }
 
     private void openCreateTagDialog(Tag tag) {
@@ -201,15 +203,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
     public void onFinishCreateDialog(Tag newTag) {
         ParseGeoPoint point = newTag.getLocation();
         newTag.setDroppedBy(ParseUser.getCurrentUser());
-
-        Marker newMarker = map.addMarker(new MarkerOptions()
-                .position(new LatLng(point.getLatitude(), point.getLongitude()))
-                .icon(defaultMarker));
-        newMarker.setTag(newTag);
-
-        tags.add(newTag);
-        markers.add(newMarker);
-
         newTag.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -221,8 +214,30 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                 }
             }
         });
+
+        Marker newMarker = map.addMarker(new MarkerOptions()
+                .position(new LatLng(point.getLatitude(), point.getLongitude()))
+                .icon(defaultMarker));
+        newMarker.setTag(newTag);
+
+        tags.add(newTag);
+        markers.add(newMarker);
     }
 
+    @Override
+    public void onFinishEditDialog(Tag newTag) {
+        newTag.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Toast.makeText(getContext(), "Unable to update", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Unable to mark tag outdated", e);
+                } else {
+                    Toast.makeText(getContext(), "Updated!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

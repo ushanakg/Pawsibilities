@@ -20,13 +20,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentCreateTagBinding;
+import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
+import com.parse.SaveCallback;
 
 import java.io.File;
 
@@ -98,7 +101,9 @@ public class CreateTagDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 tag.setName(binding.etName.getText().toString());
-                tag.setPhoto(new ParseFile(photoFile));
+                if (photoFile != null) {
+                    tag.setPhoto(new ParseFile(photoFile));
+                }
                 tag.setDirection((String) binding.spDirection.getSelectedItem());
                 sendBackResult();
             }
