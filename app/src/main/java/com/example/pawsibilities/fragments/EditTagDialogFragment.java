@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
@@ -64,17 +65,18 @@ public class EditTagDialogFragment extends DialogFragment {
             this.userLocation = new ParseGeoPoint(l.getLatitude(), l.getLongitude());
         }
 
-        ParseFile profile = tag.getPhoto();
-        if (profile != null) {
-            Glide.with(getContext()).load(profile.getUrl())
-                    .transform(new RoundedCorners(150))
+        ParseFile image = tag.getPhoto();
+        if (image != null) {
+            Glide.with(getContext()).load(image.getUrl())
+                    .circleCrop()
                     .into(binding.ivPhoto);
         }
-
         binding.tvName.setText(tag.getName());
         binding.tvTimeAgo.setText("Updated " + tag.getRelativeTimeAgo());
         binding.tvDistance.setText(tag.distanceFrom(userLocation) + " miles away");
 
+
+        // dropdown for directions
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.directions_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
