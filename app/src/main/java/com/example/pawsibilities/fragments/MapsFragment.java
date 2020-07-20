@@ -55,7 +55,9 @@ import permissions.dispatcher.RuntimePermissions;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 @RuntimePermissions
-public class MapsFragment extends Fragment implements CreateTagDialogFragment.CreateTagDialogListener, EditTagDialogFragment.EditTagDialogListener, GoogleMap.OnMapLongClickListener {
+public class MapsFragment extends Fragment implements CreateTagDialogFragment.CreateTagDialogListener,
+        EditTagDialogFragment.EditTagDialogListener,
+        GoogleMap.OnMapLongClickListener {
 
     private static final String TAG = "MapsFragment";
     private FragmentMapsBinding mapsBinding;
@@ -125,6 +127,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
             // Map is ready
             MapsFragmentPermissionsDispatcher.getMyLocationWithPermissionCheck(this);
             MapsFragmentPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
+            Log.i(TAG, "loadMap: " + mCurrentLocation);
 
             map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
@@ -153,7 +156,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
 
                 tags.addAll(queried);
                 displayTags();
-
             }
         });
     }
@@ -258,6 +260,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                     public void onSuccess(Location location) {
                         if (location != null) {
                             mCurrentLocation = location;
+                            centerOnCurrentLocation();
                         }
                     }
                 })
@@ -275,7 +278,8 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
             return;
         }
 
-        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
+        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(),
+                mCurrentLocation.getLongitude()));
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(13);
         map.moveCamera(center);
         map.animateCamera(zoom);
@@ -296,7 +300,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
         }
         MapsFragmentPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
     }
-
 
     // periodically checks for and updates the user's current location
     @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
@@ -327,7 +330,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                     @Override
                     public void onLocationResult(LocationResult locationResult) {
                         mCurrentLocation = locationResult.getLastLocation();
-                        centerOnCurrentLocation();
                     }
                 }, Looper.myLooper());
     }
