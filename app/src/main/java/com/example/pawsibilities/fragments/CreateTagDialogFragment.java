@@ -102,7 +102,6 @@ public class CreateTagDialogFragment extends DialogFragment {
                 tag.setName(binding.etName.getText().toString());
                 if (photoFile != null) {
                     tag.setPhoto(new ParseFile(photoFile));
-
                 }
                 tag.setDirection((String) binding.spDirection.getSelectedItem());
                 sendBackResult();
