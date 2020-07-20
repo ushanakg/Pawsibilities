@@ -124,8 +124,9 @@ This app allows dog-lovers to find dogs to pet near them, and also allows users 
     * (Get/REQUEST) user's current location
     * (Delete) delete a tag
 
-### Developer
-Pawsibilities is built using Gradle 6.1.1 with Java 1.8 or Java 11.
+### Developer (using Android Studio)
+Pawsibilities is built in Android Studio using Gradle 6.1.1 with Java 1.8 or Java 11.
+- To copy the project into desired directory, enter desired directory in terminal and run: git clone https://github.com/ushanakg/Pawsibilities.git
 - To invoke a build and run tests: ./gradlew build
 - To skip tests: ./gradlew build -x test
 Pawsibilities is contained in a singular module:
