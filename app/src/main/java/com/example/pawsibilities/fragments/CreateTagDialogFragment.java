@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import com.bumptech.glide.Glide;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentCreateTagBinding;
@@ -113,7 +114,10 @@ public class CreateTagDialogFragment extends DialogFragment {
                 // by this point we have the camera photo on disk
                 Bitmap takenImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
                 // Load the taken image into a preview
-                binding.ivPhoto.setImageBitmap(takenImage);
+                Glide.with(getContext())
+                        .load(photoFile)
+                        .circleCrop()
+                        .into(binding.ivPhoto);
             }
         }
     }
