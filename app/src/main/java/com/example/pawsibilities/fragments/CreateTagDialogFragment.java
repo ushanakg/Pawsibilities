@@ -116,9 +116,6 @@ public class CreateTagDialogFragment extends DialogFragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                // by this point we have the camera photo on disk
-                Bitmap takenImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-                // Load the taken image into a preview
                 Glide.with(getContext())
                         .load(photoFile)
                         .circleCrop()
