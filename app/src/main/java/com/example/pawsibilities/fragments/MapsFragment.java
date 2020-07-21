@@ -35,6 +35,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -57,7 +58,8 @@ import static com.google.android.gms.location.LocationServices.getFusedLocationP
 @RuntimePermissions
 public class MapsFragment extends Fragment implements CreateTagDialogFragment.CreateTagDialogListener,
         EditTagDialogFragment.EditTagDialogListener,
-        GoogleMap.OnMapLongClickListener {
+        GoogleMap.OnMapLongClickListener,
+        GoogleMap.OnCameraIdleListener {
 
     private static final String TAG = "MapsFragment";
     private FragmentMapsBinding mapsBinding;
@@ -66,7 +68,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
     private List<Tag> tags;
-    private List<Marker> markers;
+    //private List<Marker> markers;
     private BitmapDescriptor defaultMarker;
 
     private final long UPDATE_INTERVAL_IN_SEC = 60000;  /* 60 secs */
@@ -94,7 +96,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
         }
 
         tags = new ArrayList<>();
-        markers = new ArrayList<>();
+        //markers = new ArrayList<>();
         defaultMarker  = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
 
         mapFragment = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map));
@@ -117,8 +119,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                 openCreateTagDialog(newTag);
             }
         });
-
-        queryTags();
     }
 
     protected void loadMap(GoogleMap googleMap) {
@@ -127,7 +127,9 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
             // Map is ready
             MapsFragmentPermissionsDispatcher.getMyLocationWithPermissionCheck(this);
             MapsFragmentPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
-            Log.i(TAG, "loadMap: " + mCurrentLocation);
+
+            queryTags(map.getProjection().getVisibleRegion().latLngBounds);
+            map.setOnCameraIdleListener(this);
 
             map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
@@ -142,10 +144,13 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
         }
     }
 
-    private void queryTags() {
+    private void queryTags(LatLngBounds bounds) {
+        tags.clear();
+
         ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
         query.include(Tag.KEY_UPDATED_AT);
-        query.setLimit(20);
+        query.whereEqualTo(Tag.KEY_ACTIVE, true);
+        query.whereWithinPolygon(Tag.KEY_LOCATION, boundsToBox(bounds));
         query.findInBackground(new FindCallback<Tag>() {
             @Override
             public void done(List<Tag> queried, ParseException e) {
@@ -153,7 +158,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                     Log.e(TAG, "issue with getting Tags", e);
                     return;
                 }
-
                 tags.addAll(queried);
                 displayTags();
             }
@@ -161,7 +165,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
     }
 
     private void displayTags() {
-
         for (Tag t : tags) {
             ParseGeoPoint pos = t.getLocation();
             Marker mapMarker = map.addMarker(new MarkerOptions()
@@ -170,8 +173,17 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                     .icon(defaultMarker));
 
             mapMarker.setTag(t);
-            markers.add(mapMarker);
+            //markers.add(mapMarker);
         }
+    }
+
+    private List<ParseGeoPoint> boundsToBox(LatLngBounds bounds) {
+       List<ParseGeoPoint> corners = new ArrayList<>();
+        corners.add(new ParseGeoPoint(bounds.southwest.latitude, bounds.southwest.longitude));
+        corners.add(new ParseGeoPoint(bounds.northeast.latitude, bounds.southwest.longitude));
+        corners.add(new ParseGeoPoint(bounds.northeast.latitude, bounds.northeast.longitude));
+        corners.add(new ParseGeoPoint(bounds.southwest.latitude, bounds.northeast.longitude));
+        return corners;
     }
 
     private boolean markerClicked(Marker marker) {
@@ -223,7 +235,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
         newMarker.setTag(newTag);
 
         tags.add(newTag);
-        markers.add(newMarker);
+        //markers.add(newMarker);
     }
 
     @Override
@@ -320,8 +332,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                 && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling ActivityCompat#requestPermissions
             // to request the missing permissions, and then overriding
-            // public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
+            // public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
             // to handle the case where the user grants the permission.
             return;
         }
@@ -332,5 +343,13 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                         mCurrentLocation = locationResult.getLastLocation();
                     }
                 }, Looper.myLooper());
+    }
+
+    @Override
+    public void onCameraIdle() {
+        LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
+
+        map.clear();
+        queryTags(bounds);
     }
 }
