@@ -237,6 +237,9 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                 }
             }
         });
+        
+        map.clear();
+        displayTags();
     }
 
     @Override
