@@ -12,24 +12,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentEditTagBinding;
-import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
-import com.parse.SaveCallback;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class EditTagDialogFragment extends DialogFragment {
 
     private static final String TAG = "EditTagDialogFragment";
     public static final String KEY_TAG = "Tag";
-    public static final String KEY_Location = "Location";
+    public static final String KEY_LOCATION = "Location";
     private FragmentEditTagBinding binding;
     private Tag tag;
     private ParseGeoPoint userLocation;
@@ -43,7 +41,7 @@ public class EditTagDialogFragment extends DialogFragment {
         EditTagDialogFragment fragment = new EditTagDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(KEY_TAG, tag);
-        args.putParcelable(KEY_Location, currentLocation);
+        args.putParcelable(KEY_LOCATION, currentLocation);
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,8 +59,10 @@ public class EditTagDialogFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         if (getArguments() != null) {
             this.tag = getArguments().getParcelable(KEY_TAG);
-            Location l = (Location) getArguments().get(KEY_Location);
+            Location l = (Location) getArguments().get(KEY_LOCATION);
             this.userLocation = new ParseGeoPoint(l.getLatitude(), l.getLongitude());
+
+            Log.i(TAG, "Tag location: " + tag.getLocation().toString());
         }
 
         ParseFile image = tag.getPhoto();
@@ -73,15 +73,24 @@ public class EditTagDialogFragment extends DialogFragment {
         }
         binding.tvName.setText(tag.getName());
         binding.tvTimeAgo.setText("Updated " + tag.getRelativeTimeAgo());
-        binding.tvDistance.setText(tag.distanceFrom(userLocation) + " miles away");
 
+        // dropdown for location
+        ArrayList<String> lst = new ArrayList<>();
+        lst.add("My location");
+        ArrayAdapter<String> locationAdapter = new ArrayAdapter<>
+                (getContext(), android.R.layout.simple_spinner_item, lst);
+        locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.spDistance.setAdapter(locationAdapter);
+        locationAdapter.add(tag.distanceFrom(userLocation) + " mi away");
+        locationAdapter.notifyDataSetChanged();
+        binding.spDistance.setSelection(1);
 
         // dropdown for directions
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+        ArrayAdapter<CharSequence> directionAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.directions_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.spDirection.setAdapter(adapter);
-        binding.spDirection.setSelection(adapter.getPosition(tag.getDirection()));
+        directionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.spDirection.setAdapter(directionAdapter);
+        binding.spDirection.setSelection(directionAdapter.getPosition(tag.getDirection()));
 
         binding.tvActive.setOnClickListener(new View.OnClickListener() {
             @Override
