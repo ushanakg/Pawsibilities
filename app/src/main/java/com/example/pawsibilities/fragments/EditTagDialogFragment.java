@@ -105,6 +105,9 @@ public class EditTagDialogFragment extends DialogFragment {
             public void onClick(View view) {
                 tag.setName(binding.tvName.getText().toString());
                 tag.setDirection(binding.spDirection.getSelectedItem().toString());
+                if (binding.spDistance.getSelectedItem().equals("My location")) {
+                    tag.setLocation(userLocation);
+                }
                 sendBackResult();
             }
         });
