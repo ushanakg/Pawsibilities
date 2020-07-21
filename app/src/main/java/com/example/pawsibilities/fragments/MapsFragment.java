@@ -68,7 +68,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
     private List<Tag> tags;
-    //private List<Marker> markers;
     private BitmapDescriptor defaultMarker;
 
     private final long UPDATE_INTERVAL_IN_SEC = 60000;  /* 60 secs */
@@ -96,7 +95,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
         }
 
         tags = new ArrayList<>();
-        //markers = new ArrayList<>();
         defaultMarker  = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
 
         mapFragment = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map));
@@ -173,7 +171,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                     .icon(defaultMarker));
 
             mapMarker.setTag(t);
-            //markers.add(mapMarker);
         }
     }
 
@@ -235,7 +232,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
         newMarker.setTag(newTag);
 
         tags.add(newTag);
-        //markers.add(newMarker);
     }
 
     @Override
