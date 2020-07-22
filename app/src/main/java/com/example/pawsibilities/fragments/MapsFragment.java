@@ -69,13 +69,14 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
     private GoogleMap map;
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
+    private ParseUser user;
     private List<Tag> tags;
     private BitmapDescriptor defaultMarker;
 
     private final long UPDATE_INTERVAL_IN_SEC = 60000;  /* 60 secs */
     private final long FASTEST_INTERVAL_IN_SEC = 5000; /* 5 secs */
 
-    private final static String KEY_LOCATION = "location";
+    public final static String KEY_LOCATION = "location";
 
     @Nullable
     @Override
@@ -96,6 +97,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
             mCurrentLocation = savedInstanceState.getParcelable(KEY_LOCATION);
         }
 
+        user = ParseUser.getCurrentUser();
         tags = new ArrayList<>();
         defaultMarker  = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
 
@@ -202,14 +204,14 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
 
     private void openEditTagDialog(Tag tag) {
         FragmentManager fm = getFragmentManager();
-        EditTagDialogFragment editTagDialogFragment = EditTagDialogFragment.newInstance(tag, mCurrentLocation);
+        EditTagDialogFragment editTagDialogFragment = EditTagDialogFragment.newInstance(tag);
         editTagDialogFragment.setTargetFragment(this, 300);
         editTagDialogFragment.show(fm, "EditTagDialogFragment");
     }
 
     private void openCreateTagDialog(Tag tag) {
         FragmentManager fm = getFragmentManager();
-        CreateTagDialogFragment createTagDialogFragment = CreateTagDialogFragment.newInstance(tag, mCurrentLocation);
+        CreateTagDialogFragment createTagDialogFragment = CreateTagDialogFragment.newInstance(tag);
         createTagDialogFragment.setTargetFragment(this, 200);
         createTagDialogFragment.show(fm, "CreateTagDialogFragment");
     }
@@ -344,6 +346,9 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                     @Override
                     public void onLocationResult(LocationResult locationResult) {
                         mCurrentLocation = locationResult.getLastLocation();
+                        user.put(KEY_LOCATION, new ParseGeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
+                        user.saveInBackground();
+
                     }
                 }, Looper.myLooper());
     }
