@@ -53,6 +53,7 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder> {
 
         private void bind(Tag t) {
             binding.tvName.setText(t.getName());
+            // TODO make text resource string
             binding.tvDistance.setText(t.distanceFrom(ParseUser.getCurrentUser().getParseGeoPoint(MapsFragment.KEY_LOCATION)) + " miles away");
         }
     }
