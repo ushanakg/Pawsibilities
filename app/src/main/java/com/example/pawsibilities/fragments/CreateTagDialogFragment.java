@@ -31,6 +31,7 @@ import com.example.pawsibilities.databinding.FragmentCreateTagBinding;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.io.File;
@@ -42,7 +43,6 @@ public class CreateTagDialogFragment extends DialogFragment {
 
     private static final String TAG = "CreateTagDialogFragment";
     private static final String KEY_TAG = "Tag";
-    private static final String KEY_LOCATION = "Location";
     private FragmentCreateTagBinding binding;
     private ParseGeoPoint userLocation;
     private Tag tag;
@@ -55,11 +55,10 @@ public class CreateTagDialogFragment extends DialogFragment {
         // Required empty public constructor
     }
 
-    public static CreateTagDialogFragment newInstance(Tag tag, Location location) {
+    public static CreateTagDialogFragment newInstance(Tag tag) {
         CreateTagDialogFragment fragment = new CreateTagDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(KEY_TAG, tag);
-        args.putParcelable(KEY_LOCATION, location);
         fragment.setArguments(args);
         return fragment;
     }
@@ -77,8 +76,7 @@ public class CreateTagDialogFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         if (getArguments() != null) {
             this.tag = getArguments().getParcelable(KEY_TAG);
-            Location l = getArguments().getParcelable(KEY_LOCATION);
-            this.userLocation = new ParseGeoPoint(l.getLatitude(), l.getLongitude());
+            this.userLocation = ParseUser.getCurrentUser().getParseGeoPoint(MapsFragment.KEY_LOCATION);
         }
 
         binding.ivPhoto.setOnClickListener(new View.OnClickListener() {

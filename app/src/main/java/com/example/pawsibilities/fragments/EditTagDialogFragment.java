@@ -19,6 +19,7 @@ import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentEditTagBinding;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,8 +27,7 @@ import java.util.Arrays;
 public class EditTagDialogFragment extends DialogFragment {
 
     private static final String TAG = "EditTagDialogFragment";
-    public static final String KEY_TAG = "Tag";
-    public static final String KEY_LOCATION = "Location";
+    private static final String KEY_TAG = "Tag";
     private FragmentEditTagBinding binding;
     private Tag tag;
     private ParseGeoPoint userLocation;
@@ -37,11 +37,10 @@ public class EditTagDialogFragment extends DialogFragment {
     }
 
 
-    public static EditTagDialogFragment newInstance(Tag tag, Location currentLocation) {
+    public static EditTagDialogFragment newInstance(Tag tag) {
         EditTagDialogFragment fragment = new EditTagDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(KEY_TAG, tag);
-        args.putParcelable(KEY_LOCATION, currentLocation);
         fragment.setArguments(args);
         return fragment;
     }
@@ -59,8 +58,7 @@ public class EditTagDialogFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         if (getArguments() != null) {
             this.tag = getArguments().getParcelable(KEY_TAG);
-            Location l = (Location) getArguments().get(KEY_LOCATION);
-            this.userLocation = new ParseGeoPoint(l.getLatitude(), l.getLongitude());
+            this.userLocation = ParseUser.getCurrentUser().getParseGeoPoint(MapsFragment.KEY_LOCATION);
 
             Log.i(TAG, "Tag location: " + tag.getLocation().toString());
         }

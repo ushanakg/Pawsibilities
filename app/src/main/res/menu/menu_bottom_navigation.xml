@@ -8,6 +8,11 @@
         android:title="Map View"
         app:showAsAction="always" />
     <item
+        android:id="@+id/action_tag_list"
+        android:icon="@drawable/ic_baseline_storage_24"
+        android:title="Tags"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/action_profile"
         android:icon="@drawable/ic_baseline_person_24"
         android:title="Profile"
