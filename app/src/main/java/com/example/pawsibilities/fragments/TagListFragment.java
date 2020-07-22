@@ -65,6 +65,21 @@ public class TagListFragment extends Fragment {
         };
         binding.rvTags.addOnScrollListener(scrollListener);
 
+        binding.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                //refresh timeline
+                adapter.clear();
+                queryTags(0);
+                binding.swipeContainer.setRefreshing(false);
+            }
+        });
+        // Configure the refreshing colors
+        binding.swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
         queryTags(0);
     }
 
@@ -81,11 +96,8 @@ public class TagListFragment extends Fragment {
                     Log.e(TAG, "issue with getting Tags", e);
                     return;
                 }
-                tagList.addAll(queried);
-                adapter.notifyDataSetChanged();
+                adapter.addAll(queried);
             }
         });
     }
-
-
 }
