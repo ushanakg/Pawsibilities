@@ -28,23 +28,30 @@ This app allows dog-lovers to find dogs to pet near them, and also allows users 
 ### 1. User Stories (Required and Optional)
 
 **Required Must-have Stories**
-
+* Configure a Parse database to store the app's data
 * Users can log in
 * User can log out
 * User can sign up to create a new account
-* Users can drop a tag at their current location that includes a timestamp, photo, and a direction of travel
-* Users can update tags dropped by others
-* Pinch to zoom in/out on the map gesture implemented
-    * Tags within a 2 mile radius are present/visible on the map view
+* User's session persists across app restarts
+* App integrates with Google Maps SDK to show the user all tags on a map 
+* Users can create a tag (through a separate view) at their current location that includes the dog's name, photo, and a direction of travel
+  * When the user adds a tag, the tag "drops" to the map (animation)
+* Clicking on a tag allows the user to view details such as name of the dog, photo, when the tag was last updated, the direction of travel, and how far away the tag is from the user
+* Users can update tags (through a separate view) dropped by others: e.g. marking tags outdated and changing the tag's location
+* Tags on the map in the visible map view loaded when map is opened/moved
+* Users can view a list view of tags, sorted by least to greatest distance from the user's current location
+* [double tap]
+* Incorportates an external library to add visual polish
 
 **Optional Nice-to-have Stories**
+* Creation/edit views are modal overlays instead of separate activities
 * Users are notified when a tag within 2 miles of their current location is posted
-    * User can change their notification radius
     * Notification radius is made visible on the map 
-* All tags that fit in the map view are visible
 * Users can connect with each other receive a notification every time a user in your network drops a tag
-* Users can add a photo/more details to their profile
-    * Users can edit their profile
+* Users can edit their profile
+    * Users can select/take their profile photo
+    * User can change their notification radius
+* User profile's can show how many tags a user has dropped
 
 ### 2. Screen Archetypes
 
@@ -54,20 +61,25 @@ This app allows dog-lovers to find dogs to pet near them, and also allows users 
    * User can sign up to create a new account
 * Map View
     * Pinch to zoom in/out on the map gesture implemented
-    * Tags within a 2 mile radius are present/visible on the map view
+    * Tags within the visible area on the map view are loaded and placed on the map
     * Users are notified when a tag within 2 miles of their current location is posted
 * Profile
+    * User can edit details such as their profile photo and notification radius
     * User can log out
 * Drop/Compose Tag
     * Users can drop a tag at their current location that includes a timestamp, photo, and a direction of travel
+* Detailed View/Edit Tag
     * Users can update tags dropped by others
+* List View
+    * Users can view a list of tags sorted by least to greatest distance from the user's current location
 
 ### 3. Navigation
 
 **Tab Navigation** (Tab to Screen)
 
-* Profile
 * Map View
+* List View
+* Profile
 
 **Flow Navigation** (Screen to Screen)
 
@@ -77,9 +89,15 @@ This app allows dog-lovers to find dogs to pet near them, and also allows users 
 * Sign Up
    * => Map View
 * Map View
-    * => Drop/Compose Tag (modal overlay?)
+    * => Drop/Compose Tag 
+    * => Edit Tag 
 * Drop/Compose Tag
     * Map View (going back after creating tag)
+* Detailed View/Edit Tag
+    * Map View (going back after editing tag)
+    * List View (going back after viewing tag)
+* List View
+    * => Detailed/Edit Tag
 
 ## Wireframes
 [Add picture of your hand sketched wireframes in this section]
@@ -116,13 +134,17 @@ This app allows dog-lovers to find dogs to pet near them, and also allows users 
 * Sign Up
    * (Create/POST) new user object
 * Map View
-    * (Update/POST) update location or expiration status on a tag
+    * (Get/REQUEST) query tags to display them on the map
+* List View
+    * (GET/REQUEST) query tags to sort and display them in a RecyclerView
 * Profile
     * (Update/POST) update radius preference
 * Drop/Compose Tag
     * (Create/POST) create a new tag
-    * (Get/REQUEST) user's current location
-    * (Delete) delete a tag
+    * (Get/REQUEST) user's current location 
+* Detailed View/Edit Tag
+    * (Update/POST) update location or expiration status
+
 
 ### Developer (using Android Studio)
 Pawsibilities is built in Android Studio using Gradle 6.1.1 with Java 1.8 or Java 11.
