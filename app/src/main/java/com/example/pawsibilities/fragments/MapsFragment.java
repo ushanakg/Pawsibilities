@@ -11,10 +11,12 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.BounceInterpolator;
 import android.widget.Toast;
 
 import com.example.pawsibilities.R;
@@ -164,13 +166,15 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
 
     private void displayTags() {
         for (Tag t : tags) {
-            ParseGeoPoint pos = t.getLocation();
-            Marker mapMarker = map.addMarker(new MarkerOptions()
-                    .position(new LatLng(pos.getLatitude(), pos.getLongitude()))
-                    .title(t.getName())
-                    .icon(defaultMarker));
+            if (t.getActive()) {
+                ParseGeoPoint pos = t.getLocation();
+                Marker mapMarker = map.addMarker(new MarkerOptions()
+                        .position(new LatLng(pos.getLatitude(), pos.getLongitude()))
+                        .title(t.getName())
+                        .icon(defaultMarker));
 
-            mapMarker.setTag(t);
+                mapMarker.setTag(t);
+            }
         }
     }
 
@@ -229,6 +233,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
         Marker newMarker = map.addMarker(new MarkerOptions()
                 .position(new LatLng(point.getLatitude(), point.getLongitude()))
                 .icon(defaultMarker));
+        dropMarkerBounce(newMarker);
         newMarker.setTag(newTag);
 
         tags.add(newTag);
@@ -244,12 +249,11 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                     Log.e(TAG, "Unable to mark tag outdated", e);
                 } else {
                     Toast.makeText(getContext(), "Updated!", Toast.LENGTH_SHORT).show();
+                    map.clear();
+                    displayTags();
                 }
             }
         });
-        
-        map.clear();
-        displayTags();
     }
 
     @Override
@@ -350,5 +354,35 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
 
         map.clear();
         queryTags(bounds);
+    }
+
+    private void dropMarkerBounce(final Marker marker) {
+        // Handler allows us to repeat a code block after a specified delay
+        final android.os.Handler handler = new android.os.Handler();
+        final long start = SystemClock.uptimeMillis();
+        final long duration = 1500;
+
+        final android.view.animation.Interpolator interpolator = new BounceInterpolator();
+
+        // Animate marker with a bounce updating its position every 15ms
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = SystemClock.uptimeMillis() - start;
+                // calculate t for bounce based on elapsed time
+                float t = Math.max(1 - interpolator.getInterpolation((float) elapsed / duration), 0);
+                // anchor specifies which point on the marker image is anchored to the marker's location
+                // on the earth's surface
+                // 0.5f means the marker is always centered, and 1.0f + 6 * t changes the vertical height
+                // of the marker based on time to create a bounce (only uses number after decimal if > 1)
+                marker.setAnchor(0.5f, 1.0f + 6 * t);
+
+                if (t > 0.0) {
+                    handler.postDelayed(this, 15);
+                } else {
+                    marker.showInfoWindow();
+                }
+            }
+        });
     }
 }
