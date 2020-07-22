@@ -369,10 +369,12 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
             @Override
             public void run() {
                 long elapsed = SystemClock.uptimeMillis() - start;
-                float t = Math.max(
-                        1 - interpolator.getInterpolation((float) elapsed
-                                / duration), 0);
-                // Set the anchor
+                // calculate t for bounce based on elapsed time
+                float t = Math.max(1 - interpolator.getInterpolation((float) elapsed / duration), 0);
+                // anchor specifies which point on the marker image is anchored to the marker's location
+                // on the earth's surface
+                // 0.5f means the marker is always centered, and 1.0f + 6 * t changes the vertical height
+                // of the marker based on time to create a bounce (only uses number after decimal if > 1)
                 marker.setAnchor(0.5f, 1.0f + 6 * t);
 
                 if (t > 0.0) {
