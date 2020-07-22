@@ -3,7 +3,9 @@ package com.example.pawsibilities.fragments;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.location.Location;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -32,9 +34,9 @@ import com.parse.ParseGeoPoint;
 import com.parse.SaveCallback;
 
 import java.io.File;
+import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
-
 
 public class CreateTagDialogFragment extends DialogFragment {
 
@@ -47,7 +49,7 @@ public class CreateTagDialogFragment extends DialogFragment {
 
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 23;
     private File photoFile;
-    private static final String photoFileName = "photo.jpg";
+    private static final String photoFileName = "createphoto.jpg";
 
     public CreateTagDialogFragment() {
         // Required empty public constructor
@@ -108,7 +110,6 @@ public class CreateTagDialogFragment extends DialogFragment {
                 sendBackResult();
             }
         });
-
     }
 
     @Override
@@ -116,8 +117,10 @@ public class CreateTagDialogFragment extends DialogFragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
+                Bitmap takenImage = rotateBitmapOrientation(photoFile.getAbsolutePath());
+
                 Glide.with(getContext())
-                        .load(photoFile)
+                        .load(takenImage)
                         .circleCrop()
                         .into(binding.ivPhoto);
             }
@@ -150,6 +153,34 @@ public class CreateTagDialogFragment extends DialogFragment {
             // Start the image capture intent to take photo
             startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
         }
+    }
+
+    private Bitmap rotateBitmapOrientation(String photoFilePath) {
+        // Create and configure BitmapFactory
+        BitmapFactory.Options bounds = new BitmapFactory.Options();
+        bounds.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(photoFilePath, bounds);
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        Bitmap bm = BitmapFactory.decodeFile(photoFilePath, opts);
+        // Read EXIF Data
+        ExifInterface exif = null;
+        try {
+            exif = new ExifInterface(photoFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String orientString = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
+        int orientation = orientString != null ? Integer.parseInt(orientString) : ExifInterface.ORIENTATION_NORMAL;
+        int rotationAngle = 0;
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_90) rotationAngle = 90;
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_180) rotationAngle = 180;
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_270) rotationAngle = 270;
+        // Rotate Bitmap
+        Matrix matrix = new Matrix();
+        matrix.setRotate(rotationAngle, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
+        Bitmap rotatedBitmap = Bitmap.createBitmap(bm, 0, 0, bounds.outWidth, bounds.outHeight, matrix, true);
+        // Return result
+        return rotatedBitmap;
     }
 
     public void sendBackResult() {
