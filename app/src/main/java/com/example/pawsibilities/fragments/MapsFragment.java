@@ -348,7 +348,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                         mCurrentLocation = locationResult.getLastLocation();
                         user.put(KEY_LOCATION, new ParseGeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
                         user.saveInBackground();
-
                     }
                 }, Looper.myLooper());
     }
