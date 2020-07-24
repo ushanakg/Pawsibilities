@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding mainBinding;
     private FragmentManager fragmentManager;
+    private PagerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,30 +28,27 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentManager = getSupportFragmentManager();
 
+        adapter = new PagerAdapter(fragmentManager);
+        mainBinding.vpPager.setAdapter(adapter);
+
         mainBinding.bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Fragment fragment;
-
                 switch(item.getItemId()) {
                     case R.id.action_profile:
-                        fragment = new ProfileFragment();
+                        mainBinding.vpPager.setCurrentItem(PagerAdapter.PROFILE);
                         break;
                     case R.id.action_tag_list:
-                        fragment = new TagListFragment();
+                        mainBinding.vpPager.setCurrentItem(PagerAdapter.TAG_LIST);
                         break;
                     case R.id.action_map:
                     default:
-                        fragment = new MapsFragment();
+                        mainBinding.vpPager.setCurrentItem(PagerAdapter.MAP);
                         break;
                 }
-                fragmentManager.beginTransaction().replace(mainBinding.flContainer.getId(), fragment, "MainActivity").commit();
                 return true;
             }
         });
-
-        mainBinding.bottomNavigation.setSelectedItemId(R.id.action_map);
-
     }
 
 }
