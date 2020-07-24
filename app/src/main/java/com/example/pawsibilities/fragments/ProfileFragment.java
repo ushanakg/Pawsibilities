@@ -174,8 +174,6 @@ public class ProfileFragment extends Fragment {
             public void done(ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "saving user profile photo failed", e);
-                } else {
-                    Toast.makeText(getContext(), "Updated!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
