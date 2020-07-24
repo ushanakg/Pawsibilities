@@ -10,11 +10,14 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -36,14 +39,18 @@ import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
 
-
 public class ProfileFragment extends Fragment {
 
     private static final String KEY_PROFILE = "profile";
     private static final String TAG = "ProfileFragment";
+    private GestureDetector detector;
     private ParseUser currentUser;
     private FragmentProfileBinding profileBinding;
+
     private final static int PICK_PHOTO_CODE = 1046;
+    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 23;
+    private File photoFile;
+    private static final String photoFileName = "profilephoto.jpg";
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -61,6 +68,7 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        detector = new GestureDetector(getContext(), new GestureListener());
         currentUser = ParseUser.getCurrentUser();
 
         // display user info
@@ -69,6 +77,13 @@ public class ProfileFragment extends Fragment {
         if (profile != null) {
             Glide.with(getContext()).load(profile.getUrl()).circleCrop().into(profileBinding.ivProfile);
         }
+
+        profileBinding.ivProfile.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                return detector.onTouchEvent(motionEvent); //custom gesture listener will handle event
+            }
+        });
 
         profileBinding.ivProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +106,20 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    private void launchCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        photoFile = CreateTagDialogFragment.getPhotoFileUri(getContext(), photoFileName);
+
+        // wrap File object into a content provider
+        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.codepath.fileprovider", photoFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
+
+        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+            // Start the image capture intent to take photo
+            startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+        }
+    }
+
     // Trigger gallery selection for a photo
     private void onPickPhoto(View view) {
         Intent intent = new Intent(Intent.ACTION_PICK,
@@ -105,13 +134,22 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        Bitmap bmp = null;
         if ((data != null) && requestCode == PICK_PHOTO_CODE) {
             Uri photoUri = data.getData();
+            bmp = loadFromUri(photoUri);
+        }
+        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                bmp = CreateTagDialogFragment.rotateBitmapOrientation(photoFile.getAbsolutePath());
+            }
+        }
 
-            // set photo in image view
-            Glide.with(getContext()).load(photoUri).circleCrop().into(profileBinding.ivProfile);
+        if (bmp != null) {
+            // set image into profile pic view
+            Glide.with(getContext()).load(bmp).circleCrop().into(profileBinding.ivProfile);
 
-            Bitmap bmp = loadFromUri(photoUri);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bmp.compress(Bitmap.CompressFormat.PNG, 50, stream);
             byte[] byteArray = stream.toByteArray();
@@ -136,8 +174,6 @@ public class ProfileFragment extends Fragment {
             public void done(ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "saving user profile photo failed", e);
-                } else {
-                    Toast.makeText(getContext(), "Updated!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -158,6 +194,41 @@ public class ProfileFragment extends Fragment {
             e.printStackTrace();
         }
         return image;
+    }
+
+    // Gesture listener to handle single and double tap gestures
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return true;
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            return super.onSingleTapUp(e);
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            onPickPhoto(profileBinding.ivProfile);
+            return super.onSingleTapConfirmed(e);
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            return true;
+        }
+
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent e) {
+            // 0 on the first tap, 1 on the second, resets if enough time has passed
+            // so that two spaced out taps do not count as a double tap
+            if (e.getAction() == 1) {
+                launchCamera();
+            }
+            return super.onDoubleTapEvent(e);
+        }
     }
 }
 
