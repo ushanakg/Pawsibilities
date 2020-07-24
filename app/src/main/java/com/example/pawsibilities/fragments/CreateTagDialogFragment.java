@@ -1,5 +1,6 @@
 package com.example.pawsibilities.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -126,9 +127,9 @@ public class CreateTagDialogFragment extends DialogFragment {
     }
 
     // Returns the File for a photo stored on disk given the fileName
-    public File getPhotoFileUri(String fileName) {
+    public static File getPhotoFileUri(Context context, String fileName) {
         // Use `getExternalFilesDir` on Context to access package-specific directories.
-        File mediaStorageDir = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
+        File mediaStorageDir = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
 
         // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
@@ -141,7 +142,7 @@ public class CreateTagDialogFragment extends DialogFragment {
 
     private void launchCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        photoFile = getPhotoFileUri(photoFileName);
+        photoFile = CreateTagDialogFragment.getPhotoFileUri(getContext(), photoFileName);
 
         // wrap File object into a content provider
         Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.codepath.fileprovider", photoFile);
@@ -153,7 +154,7 @@ public class CreateTagDialogFragment extends DialogFragment {
         }
     }
 
-    private Bitmap rotateBitmapOrientation(String photoFilePath) {
+    public static Bitmap rotateBitmapOrientation(String photoFilePath) {
         // Create and configure BitmapFactory
         BitmapFactory.Options bounds = new BitmapFactory.Options();
         bounds.inJustDecodeBounds = true;

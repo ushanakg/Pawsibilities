@@ -10,6 +10,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
@@ -45,7 +46,11 @@ public class ProfileFragment extends Fragment {
     private GestureDetector detector;
     private ParseUser currentUser;
     private FragmentProfileBinding profileBinding;
+
     private final static int PICK_PHOTO_CODE = 1046;
+    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 23;
+    private File photoFile;
+    private static final String photoFileName = "profilephoto.jpg";
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -101,6 +106,20 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    private void launchCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        photoFile = CreateTagDialogFragment.getPhotoFileUri(getContext(), photoFileName);
+
+        // wrap File object into a content provider
+        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.codepath.fileprovider", photoFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
+
+        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+            // Start the image capture intent to take photo
+            startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+        }
+    }
+
     // Trigger gallery selection for a photo
     private void onPickPhoto(View view) {
         Intent intent = new Intent(Intent.ACTION_PICK,
@@ -115,13 +134,22 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        Bitmap bmp = null;
         if ((data != null) && requestCode == PICK_PHOTO_CODE) {
             Uri photoUri = data.getData();
+            bmp = loadFromUri(photoUri);
+        }
+        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                bmp = CreateTagDialogFragment.rotateBitmapOrientation(photoFile.getAbsolutePath());
+            }
+        }
 
-            // set photo in image view
-            Glide.with(getContext()).load(photoUri).circleCrop().into(profileBinding.ivProfile);
+        if (bmp != null) {
+            // set image into profile pic view
+            Glide.with(getContext()).load(bmp).circleCrop().into(profileBinding.ivProfile);
 
-            Bitmap bmp = loadFromUri(photoUri);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bmp.compress(Bitmap.CompressFormat.PNG, 50, stream);
             byte[] byteArray = stream.toByteArray();
@@ -175,34 +203,29 @@ public class ProfileFragment extends Fragment {
 
         @Override
         public boolean onDown(MotionEvent e) {
-            Log.i("onDown", e.getAction() + "");
             return true;
         }
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            Log.i("onSingleTapUp", e.getAction() + "");
             return super.onSingleTapUp(e);
         }
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            Log.i("onSingleTapConfirmed", e.getAction() + "");
-            //Do your action on single tap
+            onPickPhoto(profileBinding.ivProfile);
             return super.onSingleTapConfirmed(e);
         }
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            Log.i("onDoubleTap", e.getAction() + "");
             return true;
         }
 
         @Override
         public boolean onDoubleTapEvent(MotionEvent e) {
-            Log.i("onDoubleTapEvent", e.getAction() + "");
             if (e.getAction() == 1) {
-                //Do your action on double tap
+                launchCamera();
             }
             return super.onDoubleTapEvent(e);
         }
