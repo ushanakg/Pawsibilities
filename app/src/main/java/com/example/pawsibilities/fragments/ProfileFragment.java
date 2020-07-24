@@ -197,7 +197,7 @@ public class ProfileFragment extends Fragment {
     }
 
     // Gesture listener to handle single and double tap gestures
-    public class GestureListener extends GestureDetector.SimpleOnGestureListener {
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
         @Override
         public boolean onDown(MotionEvent e) {
@@ -222,6 +222,8 @@ public class ProfileFragment extends Fragment {
 
         @Override
         public boolean onDoubleTapEvent(MotionEvent e) {
+            // 0 on the first tap, 1 on the second, resets if enough time has passed
+            // so that two spaced out taps do not count as a double tap
             if (e.getAction() == 1) {
                 launchCamera();
             }
