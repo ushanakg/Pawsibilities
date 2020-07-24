@@ -14,7 +14,9 @@ import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -36,11 +38,11 @@ import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
 
-
 public class ProfileFragment extends Fragment {
 
     private static final String KEY_PROFILE = "profile";
     private static final String TAG = "ProfileFragment";
+    private GestureDetector detector;
     private ParseUser currentUser;
     private FragmentProfileBinding profileBinding;
     private final static int PICK_PHOTO_CODE = 1046;
@@ -61,6 +63,7 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        detector = new GestureDetector(getContext(), new GestureListener());
         currentUser = ParseUser.getCurrentUser();
 
         // display user info
@@ -69,6 +72,13 @@ public class ProfileFragment extends Fragment {
         if (profile != null) {
             Glide.with(getContext()).load(profile.getUrl()).circleCrop().into(profileBinding.ivProfile);
         }
+
+        profileBinding.ivProfile.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                return detector.onTouchEvent(motionEvent); //custom gesture listener will handle event
+            }
+        });
 
         profileBinding.ivProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,6 +168,44 @@ public class ProfileFragment extends Fragment {
             e.printStackTrace();
         }
         return image;
+    }
+
+    // Gesture listener to handle single and double tap gestures
+    public class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            Log.i("onDown", e.getAction() + "");
+            return true;
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            Log.i("onSingleTapUp", e.getAction() + "");
+            return super.onSingleTapUp(e);
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            Log.i("onSingleTapConfirmed", e.getAction() + "");
+            //Do your action on single tap
+            return super.onSingleTapConfirmed(e);
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            Log.i("onDoubleTap", e.getAction() + "");
+            return true;
+        }
+
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent e) {
+            Log.i("onDoubleTapEvent", e.getAction() + "");
+            if (e.getAction() == 1) {
+                //Do your action on double tap
+            }
+            return super.onDoubleTapEvent(e);
+        }
     }
 }
 
