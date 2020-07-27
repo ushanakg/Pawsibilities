@@ -22,9 +22,12 @@ import com.example.pawsibilities.TagAdapter;
 import com.example.pawsibilities.databinding.FragmentTagListBinding;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TagListFragment extends Fragment {
@@ -57,6 +60,20 @@ public class TagListFragment extends Fragment {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         binding.rvTags.setLayoutManager(layoutManager);
+
+        // refresh timeline
+        binding.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                adapter.clear();
+                queryTags(0);
+                binding.swipeContainer.setRefreshing(false);
+            }
+        });
+        // Configure the refreshing colors
+        binding.swipeContainer.setColorSchemeResources(android.R.color.holo_orange_light);
+
+        // infinite scroll
         scrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
@@ -65,29 +82,16 @@ public class TagListFragment extends Fragment {
         };
         binding.rvTags.addOnScrollListener(scrollListener);
 
-        binding.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                //refresh timeline
-                adapter.clear();
-                queryTags(0);
-                binding.swipeContainer.setRefreshing(false);
-            }
-        });
-        // Configure the refreshing colors
-        binding.swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-
         queryTags(0);
     }
 
     private void queryTags(int page) {
         ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
         query.include(Tag.KEY_UPDATED_AT);
-        query.setLimit(15);
-        query.setSkip(page * 15);
+        query.setLimit(10);
+        query.setSkip(page * 10);
+        query.whereNear(Tag.KEY_LOCATION,
+                ParseUser.getCurrentUser().getParseGeoPoint(MapsFragment.KEY_LOCATION));
         query.whereEqualTo(Tag.KEY_ACTIVE, true);
         query.findInBackground(new FindCallback<Tag>() {
             @Override
@@ -96,6 +100,7 @@ public class TagListFragment extends Fragment {
                     Log.e(TAG, "issue with getting Tags", e);
                     return;
                 }
+
                 adapter.addAll(queried);
             }
         });

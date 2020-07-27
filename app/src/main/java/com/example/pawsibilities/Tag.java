@@ -9,7 +9,6 @@ import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import java.text.DecimalFormat;
-import java.util.Date;
 
 @ParseClassName("Tag")
 public class Tag extends ParseObject {
