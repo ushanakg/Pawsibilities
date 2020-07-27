@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
@@ -113,7 +114,6 @@ public class TagListFragment extends Fragment {
                 }
 
                 getWalkingTime(queried);
-                adapter.addAll(queried);
             }
         });
     }
@@ -143,14 +143,17 @@ public class TagListFragment extends Fragment {
                             lst.get(i).setWalkingTime(duration.getString("text"));
                             lst.get(i).setWalkingTimeValue(duration.getInt("value"));
                         }
+
+                        adapter.addAll(lst);
                     } catch (JSONException e) {
                         Log.e(TAG, "Distance matrix api request failed", e);
+                        Toasty.error(getContext(), "Tags unavailable", Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                    Log.e(TAG, "Distance matrix api request failed", throwable);
+                    Toasty.error(getContext(), "Tags unavailable", Toast.LENGTH_SHORT).show();
                 }
             });
         }
