@@ -121,6 +121,7 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder> {
             // TODO make text resource string
             binding.tvDistance.setText(t.distanceFrom(ParseUser.getCurrentUser()
                     .getParseGeoPoint(MapsFragment.KEY_LOCATION)) + " miles away");
+            binding.tvWalk.setText(t.getWalkingTime());
         }
     }
 }
