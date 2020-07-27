@@ -65,11 +65,9 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder> {
     }
 
     public void addAll(List<Tag> lst) {
-        int start = tagList.size();
         tagList.addAll(lst);
         quickSort(0, tagList.size() - 1);
         notifyDataSetChanged();
-        //notifyItemRangeInserted(start, tagList.size() - start);
     }
 
     // quicksort tagList by walking distance (in seconds)
