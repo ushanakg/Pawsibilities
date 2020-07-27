@@ -12,6 +12,7 @@ import com.example.pawsibilities.databinding.ItemTagBinding;
 import com.example.pawsibilities.fragments.MapsFragment;
 import com.parse.ParseUser;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,6 +40,7 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Tag t = tagList.get(position);
         holder.bind(t);
+        Log.i("TagAdapter", position + ": " + t.getWalkingTimeValue());
     }
 
     @Override
@@ -63,9 +65,45 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder> {
     }
 
     public void addAll(List<Tag> lst) {
-        int start = tagList.size();
         tagList.addAll(lst);
-        notifyItemRangeInserted(start, tagList.size() - start);
+        quickSort(0, tagList.size() - 1);
+        notifyDataSetChanged();
+    }
+
+    // quicksort tagList by walking distance (in seconds)
+    private void quickSort(int left, int right) {
+        if (left >= right) {
+            return;
+        }
+
+        int partition = partition(left, right);
+        quickSort(left, partition - 1);
+        quickSort(partition + 1, right);
+    }
+
+    // partition range of tagList with tagList.get(high) as pivot
+    private int partition(int low, int high) {
+        int pivot_index = high;
+        Tag pivot = tagList.get(high);
+        high--;
+
+        while (true) {
+            while (tagList.get(low).getWalkingTimeValue() < pivot.getWalkingTimeValue()) {
+                low++;
+            }
+
+            while (tagList.get(high).getWalkingTimeValue() > pivot.getWalkingTimeValue()) {
+                high--;
+            }
+
+            if (low >= high) {
+                break;
+            }
+
+            Collections.swap(tagList, low, high);
+        }
+        Collections.swap(tagList, low, pivot_index);
+        return low;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -79,7 +117,9 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder> {
         private void bind(Tag t) {
             binding.tvName.setText(t.getName());
             // TODO make text resource string
-            binding.tvDistance.setText(t.distanceFrom(ParseUser.getCurrentUser().getParseGeoPoint(MapsFragment.KEY_LOCATION)) + " miles away");
+            binding.tvDistance.setText(t.distanceFrom(ParseUser.getCurrentUser()
+                    .getParseGeoPoint(MapsFragment.KEY_LOCATION)) + " miles away");
+            binding.tvWalk.setText(t.getWalkingTime());
         }
     }
 }

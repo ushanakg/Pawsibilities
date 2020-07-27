@@ -21,6 +21,8 @@ public class Tag extends ParseObject {
     public static final String KEY_DIRECTION = "direction";
     public static final String KEY_ACTIVE = "active";
     public static final String KEY_LOCATION = "location";
+    private String walkingTime;
+    private int walkingTimeSeconds;
 
     public Tag() {
         //required default constructor
@@ -85,5 +87,21 @@ public class Tag extends ParseObject {
         double dist = point.distanceInMilesTo(getLocation());
         DecimalFormat df = new DecimalFormat("#.#");
         return df.format(dist);
+    }
+
+    public void setWalkingTime(String str) {
+        walkingTime = str;
+    }
+
+    public void setWalkingTimeValue(int value) {
+        walkingTimeSeconds = value;
+    }
+
+    public String getWalkingTime() {
+        return walkingTime;
+    }
+
+    public int getWalkingTimeValue() {
+        return walkingTimeSeconds;
     }
 }
