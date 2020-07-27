@@ -52,6 +52,7 @@ import com.parse.SaveCallback;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
@@ -110,7 +111,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                 }
             });
         } else {
-            Toast.makeText(getContext(), "Error - Map Fragment was null!!", Toast.LENGTH_SHORT).show();
+            Toasty.error(getContext(), "Map couldn't load!", Toast.LENGTH_SHORT).show();
         }
 
         mapsBinding.fabCreateTag.setOnClickListener(new View.OnClickListener() {
@@ -142,7 +143,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
             map.setOnMapLongClickListener(this);
 
         } else {
-            Toast.makeText(getContext(), "Error - Map was null!!", Toast.LENGTH_SHORT).show();
+            Toasty.error(getContext(), "Map couldn't load!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -224,10 +225,10 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
             @Override
             public void done(ParseException e) {
                 if (e != null) {
-                    Toast.makeText(getContext(), "Couldn't create tag", Toast.LENGTH_SHORT).show();
+                    Toasty.error(getContext(), "Failed", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "save in background for new tag failed", e);
                 } else {
-                    Toast.makeText(getContext(), "Created!", Toast.LENGTH_SHORT).show();
+                    Toasty.success(getContext(), "Created!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -247,10 +248,10 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
             @Override
             public void done(ParseException e) {
                 if (e != null) {
-                    Toast.makeText(getContext(), "Unable to update", Toast.LENGTH_SHORT).show();
+                    Toasty.error(getContext(), "Failed", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "Unable to mark tag outdated", e);
                 } else {
-                    Toast.makeText(getContext(), "Updated!", Toast.LENGTH_SHORT).show();
+                    Toasty.success(getContext(), "Updated!", Toast.LENGTH_SHORT).show();
                     map.clear();
                     displayTags();
                 }
