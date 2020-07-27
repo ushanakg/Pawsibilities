@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.codepath.asynchttpclient.AsyncHttpClient;
+import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.pawsibilities.EndlessRecyclerViewScrollListener;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
@@ -26,9 +28,16 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import es.dmoral.toasty.Toasty;
+import okhttp3.Headers;
 
 public class TagListFragment extends Fragment {
 
@@ -37,6 +46,8 @@ public class TagListFragment extends Fragment {
     private List<Tag> tagList;
     private TagAdapter adapter;
     private EndlessRecyclerViewScrollListener scrollListener;
+
+    private static final String DISTANCE_MATRIX_URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&mode=walking&origins=%f,%f&destinations=%s&key=AIzaSyDuVh9ZaszyhzGn4_AwfClrzt-iEjg1Xeo";
 
     public TagListFragment() {
         // Required empty public constructor
@@ -101,8 +112,47 @@ public class TagListFragment extends Fragment {
                     return;
                 }
 
+                getWalkingTime(queried);
                 adapter.addAll(queried);
             }
         });
+    }
+
+    private void getWalkingTime(final List<Tag> lst) {
+        if (lst.size() > 0) {
+            // format request url
+            ParseGeoPoint userLocation = ParseUser.getCurrentUser().getParseGeoPoint(MapsFragment.KEY_LOCATION);
+            String destinations = "";
+            for (Tag t : lst) {
+                destinations += t.getLocation().getLatitude() + "," + t.getLocation().getLongitude() + "|";
+            }
+            destinations = destinations.substring(0, destinations.length() - 1);
+            String url = String.format(DISTANCE_MATRIX_URL, userLocation.getLatitude(), userLocation.getLongitude(), destinations);
+
+            // use distance matrix api to get walking duration to each queried tag
+            AsyncHttpClient client = new AsyncHttpClient();
+            client.get(url, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Headers headers, JSON json) {
+                    JSONObject jsonObject = json.jsonObject;
+                    try {
+                        JSONArray elements = jsonObject.getJSONArray("rows")
+                                .getJSONObject(0).getJSONArray("elements");
+                        for (int i = 0; i < elements.length(); i++) {
+                            JSONObject duration = ((JSONObject) elements.get(i)).getJSONObject("duration");
+                            lst.get(i).setWalkingTime(duration.getString("text"));
+                            lst.get(i).setWalkingTimeValue(duration.getInt("value"));
+                        }
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Distance matrix api request failed", e);
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                    Log.e(TAG, "Distance matrix api request failed", throwable);
+                }
+            });
+        }
     }
 }
