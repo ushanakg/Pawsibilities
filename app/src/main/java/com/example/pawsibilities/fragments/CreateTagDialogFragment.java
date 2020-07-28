@@ -189,14 +189,14 @@ public class CreateTagDialogFragment extends DialogFragment {
         dismiss();
     }
 
-    // Defines the listener interface
-    public interface CreateTagDialogListener {
-        void onFinishCreateDialog(Tag newTag);
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    // Defines the listener interface
+    public interface CreateTagDialogListener {
+        void onFinishCreateDialog(Tag newTag);
     }
 }

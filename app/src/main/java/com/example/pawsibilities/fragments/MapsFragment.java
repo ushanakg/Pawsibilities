@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,10 +20,12 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
 import android.widget.Toast;
 
+import com.example.pawsibilities.MainActivity;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentMapsBinding;
@@ -65,7 +69,8 @@ import static com.google.android.gms.location.LocationServices.getFusedLocationP
 public class MapsFragment extends Fragment implements CreateTagDialogFragment.CreateTagDialogListener,
         EditTagDialogFragment.EditTagDialogListener,
         GoogleMap.OnMapLongClickListener,
-        GoogleMap.OnCameraIdleListener {
+        GoogleMap.OnCameraIdleListener,
+        MainActivity.FabButtonClickListener {
 
     private static final String TAG = "MapsFragment";
     private FragmentMapsBinding mapsBinding;
@@ -76,6 +81,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
     private ParseUser user;
     private List<Tag> tags;
     private Bitmap smallMarker;
+    private android.transition.Transition.TransitionListener mEnterTransitionListener;
 
     private final long UPDATE_INTERVAL_IN_SEC = 60000;  /* 60 secs */
     private final long FASTEST_INTERVAL_IN_SEC = 5000; /* 5 secs */
@@ -116,14 +122,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
             Toasty.error(getContext(), "Map couldn't load!", Toast.LENGTH_SHORT).show();
         }
 
-        mapsBinding.fabCreateTag.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Tag newTag = new Tag();
-                newTag.setLocation(new ParseGeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
-                openCreateTagDialog(newTag);
-            }
-        });
+        ((MainActivity )getActivity()).setListener(this);
 
         // prepare custom map marker
         BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.drawable.mapmarker);
@@ -217,7 +216,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
         editTagDialogFragment.show(fm, "EditTagDialogFragment");
     }
 
-    private void openCreateTagDialog(Tag tag) {
+    public void openCreateTagDialog(Tag tag) {
         FragmentManager fm = getFragmentManager();
         CreateTagDialogFragment createTagDialogFragment = CreateTagDialogFragment.newInstance(tag);
         createTagDialogFragment.setTargetFragment(this, 200);
@@ -396,5 +395,13 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                 }
             }
         });
+    }
+
+    @Override
+    public void onFabClicked() {
+        Tag newTag = new Tag();
+        newTag.setLocation(new ParseGeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
+
+        openCreateTagDialog(newTag);
     }
 }
