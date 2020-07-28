@@ -23,7 +23,7 @@ import com.parse.ParseUser;
 
 import java.util.ArrayList;
 
-public class DetailedTagDialogFragment extends DialogFragment {
+public class DetailedTagDialogFragment extends CircularRevealDialogFragment {
 
     private static final String TAG = "DetailedTagDialogFragment";
     private static final String KEY_TAG = "Tag";
@@ -49,6 +49,7 @@ public class DetailedTagDialogFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentDetailedTagDialogBinding.inflate(inflater, container, false);
+        setUpOnLayoutListener(binding.getRoot(), true);
         return binding.getRoot();
     }
 
