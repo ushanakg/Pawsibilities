@@ -8,6 +8,9 @@ import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
@@ -72,7 +75,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
     private Location mCurrentLocation;
     private ParseUser user;
     private List<Tag> tags;
-    private BitmapDescriptor defaultMarker;
+    private Bitmap smallMarker;
 
     private final long UPDATE_INTERVAL_IN_SEC = 60000;  /* 60 secs */
     private final long FASTEST_INTERVAL_IN_SEC = 5000; /* 5 secs */
@@ -100,7 +103,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
 
         user = ParseUser.getCurrentUser();
         tags = new ArrayList<>();
-        defaultMarker  = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
 
         mapFragment = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map));
         if (mapFragment != null) {
@@ -122,6 +124,11 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                 openCreateTagDialog(newTag);
             }
         });
+
+        // prepare custom map marker
+        BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.drawable.mapmarker);
+        Bitmap b = bitmapdraw.getBitmap();
+        smallMarker = Bitmap.createScaledBitmap(b, 100, 100, false);
     }
 
     protected void loadMap(GoogleMap googleMap) {
@@ -174,7 +181,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                 Marker mapMarker = map.addMarker(new MarkerOptions()
                         .position(new LatLng(pos.getLatitude(), pos.getLongitude()))
                         .title(t.getName())
-                        .icon(defaultMarker));
+                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
 
                 mapMarker.setTag(t);
             }
@@ -235,7 +242,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
 
         Marker newMarker = map.addMarker(new MarkerOptions()
                 .position(new LatLng(point.getLatitude(), point.getLongitude()))
-                .icon(defaultMarker));
+                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
         dropMarkerBounce(newMarker);
         newMarker.setTag(newTag);
 
