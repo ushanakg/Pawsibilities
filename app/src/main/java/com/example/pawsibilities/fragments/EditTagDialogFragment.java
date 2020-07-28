@@ -59,8 +59,6 @@ public class EditTagDialogFragment extends DialogFragment {
         if (getArguments() != null) {
             this.tag = getArguments().getParcelable(KEY_TAG);
             this.userLocation = ParseUser.getCurrentUser().getParseGeoPoint(MapsFragment.KEY_LOCATION);
-
-            Log.i(TAG, "Tag location: " + tag.getLocation().toString());
         }
 
         ParseFile image = tag.getPhoto();

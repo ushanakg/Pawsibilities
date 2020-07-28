@@ -1,14 +1,19 @@
 package com.example.pawsibilities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pawsibilities.databinding.ItemTagBinding;
+import com.example.pawsibilities.fragments.CreateTagDialogFragment;
+import com.example.pawsibilities.fragments.DetailedTagDialogFragment;
 import com.example.pawsibilities.fragments.MapsFragment;
 import com.parse.ParseUser;
 
@@ -40,7 +45,6 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Tag t = tagList.get(position);
         holder.bind(t);
-        Log.i("TagAdapter", position + ": " + t.getWalkingTimeValue());
     }
 
     @Override
@@ -92,7 +96,7 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder> {
                 low++;
             }
 
-            while (tagList.get(high).getWalkingTimeValue() > pivot.getWalkingTimeValue()) {
+            while (high >= 0 &&tagList.get(high).getWalkingTimeValue() > pivot.getWalkingTimeValue()) {
                 high--;
             }
 
@@ -106,20 +110,30 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder> {
         return low;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private ItemTagBinding itemBinding;
+        private Tag tag;
 
         public ViewHolder(@NonNull ItemTagBinding b) {
             super(b.getRoot());
             itemBinding = b;
+            b.getRoot().setOnClickListener(this);
         }
 
         private void bind(Tag t) {
+            tag = t;
             binding.tvName.setText(t.getName());
             // TODO make text resource string
             binding.tvDistance.setText(t.distanceFrom(ParseUser.getCurrentUser()
                     .getParseGeoPoint(MapsFragment.KEY_LOCATION)) + " miles away");
             binding.tvWalk.setText(t.getWalkingTime());
+        }
+
+        @Override
+        public void onClick(View view) {
+            FragmentManager fm = ((MainActivity) context).getSupportFragmentManager();
+            DetailedTagDialogFragment fragment = DetailedTagDialogFragment.newInstance(tag);
+            fragment.show(fm, "DetailedTagDialogFragment");
         }
     }
 }
