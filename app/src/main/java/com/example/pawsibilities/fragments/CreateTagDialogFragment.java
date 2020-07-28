@@ -40,7 +40,7 @@ import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
 
-public class CreateTagDialogFragment extends DialogFragment {
+public class CreateTagDialogFragment extends CircularRevealDialogFragment {
 
     private static final String TAG = "CreateTagDialogFragment";
     private static final String KEY_TAG = "Tag";
@@ -69,6 +69,7 @@ public class CreateTagDialogFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentCreateTagBinding.inflate(inflater, container, false);
+        setUpOnLayoutListener(binding.getRoot(), true);
         return binding.getRoot();
     }
 
