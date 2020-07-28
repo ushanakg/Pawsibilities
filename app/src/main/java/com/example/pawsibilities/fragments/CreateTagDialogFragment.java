@@ -97,6 +97,7 @@ public class CreateTagDialogFragment extends DialogFragment {
                 R.array.directions_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spDirection.setAdapter(adapter);
+        binding.spDirection.setSelection(0);
 
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
