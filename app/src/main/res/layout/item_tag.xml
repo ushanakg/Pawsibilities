@@ -1,67 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="8dp"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:layout_marginBottom="2dp"
+    android:layout_marginTop="2dp"
+    android:layout_marginLeft="4dp"
+    android:layout_marginRight="4dp">
 
-    <ImageView
-        android:id="@+id/ivTag"
-        android:layout_width="45dp"
-        android:layout_height="70dp"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="4dp"
-        app:srcCompat="@drawable/mapmarker" />
-
-    <TextView
-        android:id="@+id/tvName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_toEndOf="@+id/ivTag"
-        android:textColor="#000000"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        tools:text="Sir Woofles" />
-
-    <TextView
-        android:id="@+id/tvDistance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvName"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="2dp"
-        android:layout_toEndOf="@+id/ivTag"
-        android:textColor="#000000"
-        android:textStyle="italic"
-        tools:text="2.7 miles away" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="8dp"
-        android:orientation="vertical">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/ivWalk"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_horizontal"
-            android:tint="#B5B5B5"
-            app:srcCompat="@drawable/ic_baseline_directions_walk_24" />
+            android:id="@+id/ivTag"
+            android:layout_width="45dp"
+            android:layout_height="70dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="4dp"
+            app:srcCompat="@drawable/mapmarker" />
 
         <TextView
-            android:id="@+id/tvWalk"
+            android:id="@+id/tvName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/ivWalk"
-            android:layout_alignParentEnd="true"
-            android:layout_gravity="center_horizontal"
-            android:textSize="12sp"
-            tools:text="1 min" />
-    </LinearLayout>
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_toEndOf="@+id/ivTag"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="Sir Woofles" />
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/tvDistance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvName"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="2dp"
+            android:layout_toEndOf="@+id/ivTag"
+            android:textColor="#000000"
+            android:textStyle="italic"
+            tools:text="2.7 miles away" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ivWalk"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                android:tint="#B5B5B5"
+                app:srcCompat="@drawable/ic_baseline_directions_walk_24" />
+
+            <TextView
+                android:id="@+id/tvWalk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ivWalk"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="center_horizontal"
+                android:textSize="12sp"
+                tools:text="1 min" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
