@@ -15,7 +15,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/white">
 
         <ImageView
             android:id="@+id/ivTag"
@@ -23,31 +24,40 @@
             android:layout_height="70dp"
             android:layout_alignParentStart="true"
             android:layout_marginStart="4dp"
+            android:tint="@color/orange"
             app:srcCompat="@drawable/mapmarker" />
 
-        <TextView
-            android:id="@+id/tvName"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:layout_toEndOf="@+id/ivTag"
-            android:textColor="#000000"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:text="Sir Woofles" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvDistance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tvName"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="2dp"
-            android:layout_toEndOf="@+id/ivTag"
-            android:textColor="#000000"
-            android:textStyle="italic"
-            tools:text="2.7 miles away" />
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_toEndOf="@+id/ivTag"
+                android:textColor="@color/dusty_blue"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="Sir Woofles" />
+
+            <TextView
+                android:id="@+id/tvDistance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvName"
+                android:layout_marginTop="2dp"
+                android:layout_toEndOf="@+id/ivTag"
+                android:textColor="@color/dark_grey"
+                android:textStyle="italic"
+                tools:text="2.7 miles away" />
+        </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -62,7 +72,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
-                android:tint="#B5B5B5"
+                android:tint="@color/dusty_blue"
                 app:srcCompat="@drawable/ic_baseline_directions_walk_24" />
 
             <TextView
@@ -72,6 +82,7 @@
                 android:layout_below="@+id/ivWalk"
                 android:layout_alignParentEnd="true"
                 android:layout_gravity="center_horizontal"
+                android:textColor="@color/dark_grey"
                 android:textSize="12sp"
                 tools:text="1 min" />
         </LinearLayout>
