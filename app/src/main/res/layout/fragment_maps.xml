@@ -16,12 +16,12 @@
             android:id="@+id/map"
             class="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" 
+            android:layout_height="match_parent"
             map:uiCompass="true"
-            map:uiZoomGestures="true"
-            map:uiRotateGestures="true" />
+            map:uiRotateGestures="true"
+            map:uiZoomGestures="true" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <!--<com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabCreateTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -29,9 +29,10 @@
             android:layout_margin="16dp"
             android:src="@drawable/plus_fab"
             android:tint="@color/white"
+            android:visibility="visible"
             app:backgroundTint="@color/orange"
             app:layout_anchor="@id/map"
-            app:layout_anchorGravity="bottom|right|end" />
+            app:layout_anchorGravity="bottom|right|end" />-->
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

@@ -4,9 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.viewpager.widget.ViewPager;
 
+import android.animation.Animator;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewAnimationUtils;
 
 import com.example.pawsibilities.databinding.ActivityMainBinding;
 import com.example.pawsibilities.fragments.MapsFragment;
@@ -49,6 +54,23 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-    }
 
+        mainBinding.vpPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == PagerAdapter.MAP) {
+                    mainBinding.fabCreateTag.show();
+                } else {
+                    mainBinding.fabCreateTag.hide();
+                }
+            }
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
+    }
 }

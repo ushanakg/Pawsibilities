@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,6 +20,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
 import android.widget.Toast;
@@ -76,6 +79,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
     private ParseUser user;
     private List<Tag> tags;
     private Bitmap smallMarker;
+    private android.transition.Transition.TransitionListener mEnterTransitionListener;
 
     private final long UPDATE_INTERVAL_IN_SEC = 60000;  /* 60 secs */
     private final long FASTEST_INTERVAL_IN_SEC = 5000; /* 5 secs */
@@ -116,14 +120,14 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
             Toasty.error(getContext(), "Map couldn't load!", Toast.LENGTH_SHORT).show();
         }
 
-        mapsBinding.fabCreateTag.setOnClickListener(new View.OnClickListener() {
+        /*mapsBinding.fabCreateTag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Tag newTag = new Tag();
                 newTag.setLocation(new ParseGeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
                 openCreateTagDialog(newTag);
             }
-        });
+        });*/
 
         // prepare custom map marker
         BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.drawable.mapmarker);
