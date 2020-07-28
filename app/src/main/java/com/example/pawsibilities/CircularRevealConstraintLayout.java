@@ -12,6 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.google.android.material.circularreveal.CircularRevealHelper;
 import com.google.android.material.circularreveal.CircularRevealWidget;
 
+// Class developed by Selina Kim
 public class CircularRevealConstraintLayout extends ConstraintLayout
     implements CircularRevealWidget {
   private final CircularRevealHelper helper;

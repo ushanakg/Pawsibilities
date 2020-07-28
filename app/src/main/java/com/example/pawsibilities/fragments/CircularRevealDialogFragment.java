@@ -18,6 +18,7 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
 import com.example.pawsibilities.R;
 
+// Class developed by Selina Kim
 public class CircularRevealDialogFragment extends DialogFragment {
 
     private static final String TAG = "CircularRevealDialogFragment";
