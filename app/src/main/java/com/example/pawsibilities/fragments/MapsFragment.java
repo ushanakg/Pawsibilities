@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
 import android.widget.Toast;
 
+import com.example.pawsibilities.MainActivity;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentMapsBinding;
@@ -68,7 +69,8 @@ import static com.google.android.gms.location.LocationServices.getFusedLocationP
 public class MapsFragment extends Fragment implements CreateTagDialogFragment.CreateTagDialogListener,
         EditTagDialogFragment.EditTagDialogListener,
         GoogleMap.OnMapLongClickListener,
-        GoogleMap.OnCameraIdleListener {
+        GoogleMap.OnCameraIdleListener,
+        MainActivity.FabButtonClickListener {
 
     private static final String TAG = "MapsFragment";
     private FragmentMapsBinding mapsBinding;
@@ -120,14 +122,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
             Toasty.error(getContext(), "Map couldn't load!", Toast.LENGTH_SHORT).show();
         }
 
-        /*mapsBinding.fabCreateTag.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Tag newTag = new Tag();
-                newTag.setLocation(new ParseGeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
-                openCreateTagDialog(newTag);
-            }
-        });*/
+        ((MainActivity )getActivity()).setListener(this);
 
         // prepare custom map marker
         BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.drawable.mapmarker);
@@ -221,7 +216,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
         editTagDialogFragment.show(fm, "EditTagDialogFragment");
     }
 
-    private void openCreateTagDialog(Tag tag) {
+    public void openCreateTagDialog(Tag tag) {
         FragmentManager fm = getFragmentManager();
         CreateTagDialogFragment createTagDialogFragment = CreateTagDialogFragment.newInstance(tag);
         createTagDialogFragment.setTargetFragment(this, 200);
@@ -400,5 +395,13 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                 }
             }
         });
+    }
+
+    @Override
+    public void onFabClicked() {
+        Tag newTag = new Tag();
+        newTag.setLocation(new ParseGeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
+
+        openCreateTagDialog(newTag);
     }
 }

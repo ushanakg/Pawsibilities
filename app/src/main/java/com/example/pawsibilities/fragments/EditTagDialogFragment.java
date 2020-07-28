@@ -115,14 +115,14 @@ public class EditTagDialogFragment extends DialogFragment {
         dismiss();
     }
 
-    // Defines the listener interface
-    public interface EditTagDialogListener {
-        void onFinishEditDialog(Tag newTag);
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    // Defines the listener interface
+    public interface EditTagDialogListener {
+        void onFinishEditDialog(Tag newTag);
     }
 }

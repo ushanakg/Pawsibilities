@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding mainBinding;
     private FragmentManager fragmentManager;
     private PagerAdapter adapter;
+    private FabButtonClickListener fabButtonClickListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,5 +73,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageScrollStateChanged(int state) {}
         });
+
+        mainBinding.fabCreateTag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fabButtonClickListener.onFabClicked();
+            }
+        });
+    }
+
+    public void setListener(FabButtonClickListener listener){
+        fabButtonClickListener = listener;
+    }
+
+    // listener interface for floating action button click
+    public interface FabButtonClickListener {
+        void onFabClicked();
     }
 }
