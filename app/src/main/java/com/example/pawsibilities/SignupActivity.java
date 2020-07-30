@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.pawsibilities.databinding.ActivityLoginBinding;
 import com.example.pawsibilities.databinding.ActivitySignupBinding;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -44,18 +43,18 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void signupUser(final String username, final String password) {
-        // Create the ParseUser
         ParseUser user = new ParseUser();
-        // Set core properties
         user.setUsername(username);
         user.setPassword(password);
-        // Invoke signUpInBackground
+
         user.signUpInBackground(new SignUpCallback() {
             public void done(ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "Sign up failed", e);
                     Toasty.error(SignupActivity.this, "Sign up failed!", Toast.LENGTH_SHORT).show();
                 } else {
+
+                    // go back to login and sign user in
                     Intent i = new Intent();
                     i.putExtra("username", username);
                     i.putExtra("password", password);

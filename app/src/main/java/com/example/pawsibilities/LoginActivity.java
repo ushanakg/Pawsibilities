@@ -13,7 +13,6 @@ import com.example.pawsibilities.databinding.ActivityLoginBinding;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
-import com.parse.SignUpCallback;
 
 import es.dmoral.toasty.Toasty;
 
@@ -64,6 +63,7 @@ public class LoginActivity extends AppCompatActivity {
             public void done(ParseUser user, ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "issue with login", e);
+                    Toasty.error(LoginActivity.this, "Login failed!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -74,8 +74,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SIGN_UP_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
