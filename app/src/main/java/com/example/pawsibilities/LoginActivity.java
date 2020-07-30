@@ -20,6 +20,7 @@ import es.dmoral.toasty.Toasty;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
+    private static final int SIGN_UP_REQUEST_CODE = 34;
 
     private ActivityLoginBinding loginBinding;
 
@@ -45,21 +46,19 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        loginBinding.btnSignup.setOnClickListener(new View.OnClickListener() {
+        loginBinding.tvSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String username = loginBinding.etUsername.getText().toString();
-                String password = loginBinding.etPassword.getText().toString();
-                signupUser(username, password);
+                Intent i = new Intent(LoginActivity.this, SignupActivity.class);
+                startActivityForResult(i, SIGN_UP_REQUEST_CODE);
             }
         });
-
 
         getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
     // authenticates the username and password --> navigates to the main activity
-    private void loginUser(String username, String password) {
+    public void loginUser(String username, String password) {
         ParseUser.logInInBackground(username, password, new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException e) {
@@ -74,22 +73,19 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void signupUser(final String username, final String password) {
-        // Create the ParseUser
-        ParseUser user = new ParseUser();
-        // Set core properties
-        user.setUsername(username);
-        user.setPassword(password);
-        // Invoke signUpInBackground
-        user.signUpInBackground(new SignUpCallback() {
-            public void done(ParseException e) {
-                if (e != null) {
-                    Log.e(TAG, "Sign up failed", e);
-                } else {
-                    loginUser(username, password);
-                }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SIGN_UP_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                String username = data.getStringExtra("username");
+                String password = data.getStringExtra("password");
+                loginBinding.etUsername.setText(username);
+                loginBinding.etPassword.setText(password);
+                loginUser(username, password);
             }
-        });
+        }
     }
 
     private void goMainActivity() {
