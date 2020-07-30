@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
         mainBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mainBinding.getRoot());
 
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
         fragmentManager = getSupportFragmentManager();
 
         adapter = new PagerAdapter(fragmentManager);

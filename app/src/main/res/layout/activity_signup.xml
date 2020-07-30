@@ -47,27 +47,15 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnLogin"
+                android:id="@+id/btnSignup"
                 style="@style/FlatRoundedButton"
                 android:layout_gravity="center_horizontal"
                 android:layout_width="270dp"
                 android:layout_height="60dp"
                 android:layout_marginTop="16dp"
-                android:text="LOG IN" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tvSignUp"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_gravity="center_horizontal"
-                android:clickable="true"
-                android:text="Don't have an account? Sign up!"
-                android:textAllCaps="false"
-                android:textColor="@color/dusty_blue" />
+                android:text="SIGN UP" />
 
         </LinearLayout>
-
 
     </RelativeLayout>
 </layout>
