@@ -8,13 +8,27 @@
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/light_blue">
+        android:layout_height="match_parent" >
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvTags"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:background="@color/light_blue"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp" />
+
+        <com.cooltechworks.views.shimmer.ShimmerRecyclerView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/rvShimmer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:shimmer_demo_child_count="12"
+            app:shimmer_demo_layout="@layout/item_tag"
+            app:shimmer_demo_layout_manager_type="linear_vertical"
+            app:shimmer_demo_angle="20"
+            />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

@@ -66,6 +66,8 @@ public class TagListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        binding.rvShimmer.showShimmerAdapter();
+
         tagList = new ArrayList<>();
         adapter = new TagAdapter(getContext(), tagList);
         binding.rvTags.setAdapter(adapter);
@@ -145,6 +147,8 @@ public class TagListFragment extends Fragment {
                         }
 
                         adapter.addAll(lst);
+                        binding.rvShimmer.hideShimmerAdapter();
+
                     } catch (JSONException e) {
                         Log.e(TAG, "Distance matrix api request failed", e);
                         Toasty.error(getContext(), "Tags unavailable", Toast.LENGTH_SHORT).show();
