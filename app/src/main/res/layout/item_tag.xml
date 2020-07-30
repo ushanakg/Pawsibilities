@@ -25,7 +25,7 @@
             android:layout_alignParentStart="true"
             android:layout_marginStart="4dp"
             android:tint="@color/orange"
-            app:srcCompat="@drawable/mapmarker" />
+            app:srcCompat="@drawable/map_marker" />
 
         <LinearLayout
             android:layout_width="wrap_content"
