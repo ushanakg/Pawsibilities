@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentEditTagBinding;
@@ -64,19 +66,21 @@ public class EditTagDialogFragment extends CircularRevealDialogFragment {
 
         ParseFile image = tag.getPhoto();
         if (image != null) {
-            Glide.with(getContext()).load(image.getUrl())
-                    .circleCrop()
+            Glide.with(getContext())
+                    .load(image.getUrl())
+                    .transform(new CenterCrop(), new RoundedCorners(100))
                     .into(binding.ivPhoto);
         }
         binding.tvName.setText(tag.getName());
+        binding.tvName.setSelected(true);
         binding.tvTimeAgo.setText("Updated " + tag.getRelativeTimeAgo());
 
         // dropdown for location
         ArrayList<String> lst = new ArrayList<>();
-        lst.add("My location");
+        lst.add("Your location");
         ArrayAdapter<String> locationAdapter = new ArrayAdapter<>
-                (getContext(), android.R.layout.simple_spinner_item, lst);
-        locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                (getContext(), R.layout.location_spinner_item, lst);
+        locationAdapter.setDropDownViewResource(R.layout.location_spinner_item);
         binding.spDistance.setAdapter(locationAdapter);
         locationAdapter.add(tag.distanceFrom(userLocation) + " mi away");
         locationAdapter.notifyDataSetChanged();
@@ -84,8 +88,8 @@ public class EditTagDialogFragment extends CircularRevealDialogFragment {
 
         // dropdown for directions
         ArrayAdapter<CharSequence> directionAdapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.directions_array, android.R.layout.simple_spinner_item);
-        directionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                R.array.directions_array, R.layout.direction_spinner_item);
+        directionAdapter.setDropDownViewResource(R.layout.direction_spinner_item);
         binding.spDirection.setAdapter(directionAdapter);
         binding.spDirection.setSelection(directionAdapter.getPosition(tag.getDirection()));
 

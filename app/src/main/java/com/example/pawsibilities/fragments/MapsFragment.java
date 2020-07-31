@@ -76,7 +76,6 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
     private ParseUser user;
     private List<Tag> tags;
     private Bitmap smallMarker;
-    private android.transition.Transition.TransitionListener mEnterTransitionListener;
 
     private final long UPDATE_INTERVAL_IN_SEC = 60000;  /* 60 secs */
     private final long FASTEST_INTERVAL_IN_SEC = 5000; /* 5 secs */
@@ -229,7 +228,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                     Toasty.error(getContext(), "Failed", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "save in background for new tag failed", e);
                 } else {
-                    Toasty.success(getContext(), "Created!", Toast.LENGTH_SHORT).show();
+                    Toasty.success(getContext(), "Success!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
