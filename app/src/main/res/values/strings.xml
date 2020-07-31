@@ -14,6 +14,7 @@
         <item>NE</item>
     </string-array>
 
-    <string name="milesaway"> miles away</string>
-    <string name="yourlocation"> mi away</string>
+    <string name="miaway">&#160;mi away</string>
+    <string name="milesaway">&#160;miles away</string>
+    <string name="yourlocation"> Your location</string>
 </resources>

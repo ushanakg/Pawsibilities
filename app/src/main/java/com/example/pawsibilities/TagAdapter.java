@@ -1,6 +1,7 @@
 package com.example.pawsibilities;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,7 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Tag t = tagList.get(position);
+        Log.i("TagAdapter", "position: " + position + " | " + t.getName());
         holder.bind(t);
     }
 
@@ -61,11 +63,12 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder> {
     public void clear() {
         int size = tagList.size();
         tagList.clear();
-        notifyItemRangeRemoved(0, size);
+        notifyDataSetChanged();
     }
 
     public void addAll(List<Tag> lst) {
         tagList.addAll(lst);
+        Log.i("TagAdapter", "num of tags: " + tagList.size());
         quickSort(0, tagList.size() - 1);
         notifyDataSetChanged();
     }
