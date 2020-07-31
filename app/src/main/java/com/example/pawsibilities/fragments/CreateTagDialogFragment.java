@@ -4,13 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.location.Location;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,12 +12,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,11 +27,9 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentCreateTagBinding;
-import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.io.File;
 import java.io.IOException;
@@ -98,9 +87,9 @@ public class CreateTagDialogFragment extends CircularRevealDialogFragment {
         });
 
         if (userLocation.equals(tag.getLocation())) {
-            binding.tvDistance.setText("Your current location");
+            binding.tvDistance.setText(getString(R.string.yourlocation));
         } else {
-            binding.tvDistance.setText(tag.distanceFrom(userLocation) + " miles away");
+            binding.tvDistance.setText(tag.distanceFrom(userLocation) + getString(R.string.milesaway));
         }
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),

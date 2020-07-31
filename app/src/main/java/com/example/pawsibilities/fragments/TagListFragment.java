@@ -13,13 +13,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.pawsibilities.EndlessRecyclerViewScrollListener;
-import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.TagAdapter;
 import com.example.pawsibilities.databinding.FragmentTagListBinding;
@@ -34,7 +32,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;

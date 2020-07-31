@@ -2,23 +2,17 @@ package com.example.pawsibilities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 
 import com.example.pawsibilities.databinding.ActivityMainBinding;
-import com.example.pawsibilities.fragments.MapsFragment;
-import com.example.pawsibilities.fragments.ProfileFragment;
-import com.example.pawsibilities.fragments.TagListFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
