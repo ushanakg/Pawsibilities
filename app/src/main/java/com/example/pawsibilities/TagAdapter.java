@@ -41,7 +41,6 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Tag t = tagList.get(position);
-        Log.i("TagAdapter", "position: " + position + " | " + t.getName());
         holder.bind(t);
     }
 
@@ -68,7 +67,6 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder> {
 
     public void addAll(List<Tag> lst) {
         tagList.addAll(lst);
-        Log.i("TagAdapter", "num of tags: " + tagList.size());
         quickSort(0, tagList.size() - 1);
         notifyDataSetChanged();
     }

@@ -98,19 +98,13 @@ public class TagListFragment extends Fragment {
     }
 
     private void incrementQueryRadius(List<Tag> lst) {
-        Log.i(TAG, "radius: " + QUERY_RADIUS);
-
         double furthestTagDistance = Double.parseDouble(lst.get(lst.size() - 1)
                 .distanceFrom(ParseUser.getCurrentUser().getParseGeoPoint(MapsFragment.KEY_LOCATION)));
-        Log.i(TAG, "furthest tag: " + furthestTagDistance);
         if (furthestTagDistance > QUERY_RADIUS * 0.75) {
             QUERY_RADIUS += QUERY_RADIUS_INCREMENT;
         }
-        Log.i(TAG, "new radius: " + QUERY_RADIUS);
-
     }
 
-    // TODO increment radius (by chunk unit) when furthest tag is past 75% of current radius
     private void queryTags(int page) {
         if (page == 0) {
             binding.rvShimmer.showShimmerAdapter();
@@ -132,13 +126,8 @@ public class TagListFragment extends Fragment {
                     Log.e(TAG, "issue with getting Tags", e);
                     return;
                 }
-                Log.i(TAG, "num of tags + queried: " + (tagList.size() + queried.size()));
 
                 if (queried.size() > 0) {
-                    for (int i = 0; i < queried.size(); i++) {
-                        Log.i(TAG, "queried(" + i + "): " + queried.get(i).getName());
-                    }
-
                     incrementQueryRadius(queried);
                     getWalkingTime(queried);
                 } else {
