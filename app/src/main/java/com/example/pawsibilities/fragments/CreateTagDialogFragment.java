@@ -4,7 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.location.Location;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -26,6 +31,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentCreateTagBinding;
@@ -81,7 +88,7 @@ public class CreateTagDialogFragment extends CircularRevealDialogFragment {
             this.userLocation = ParseUser.getCurrentUser().getParseGeoPoint(MapsFragment.KEY_LOCATION);
         }
 
-        binding.ivPhoto.setOnClickListener(new View.OnClickListener() {
+        binding.cvPhotoWrapper.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 launchCamera();
@@ -95,15 +102,21 @@ public class CreateTagDialogFragment extends CircularRevealDialogFragment {
         }
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.directions_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                R.array.directions_array, R.layout.direction_spinner_item);
+        adapter.setDropDownViewResource(R.layout.direction_spinner_item);
         binding.spDirection.setAdapter(adapter);
         binding.spDirection.setSelection(0);
 
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tag.setName(binding.etName.getText().toString());
+
+                String name = binding.etName.getText().toString();
+                if (name.isEmpty()) {
+                    name = "Unnamed";
+                }
+                tag.setName(name);
+
                 if (photoFile != null) {
                     tag.setPhoto(new ParseFile(photoFile));
                 }
@@ -122,7 +135,7 @@ public class CreateTagDialogFragment extends CircularRevealDialogFragment {
 
                 Glide.with(getContext())
                         .load(takenImage)
-                        .circleCrop()
+                        .transform(new CenterCrop(), new RoundedCorners(100))
                         .into(binding.ivPhoto);
             }
         }

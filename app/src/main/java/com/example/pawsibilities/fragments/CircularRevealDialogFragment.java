@@ -80,7 +80,7 @@ public class CircularRevealDialogFragment extends DialogFragment {
 
             startColorAnimation(
                     viewToAnimate,
-                    getResources().getColor(R.color.orange),
+                    getResources().getColor(R.color.dusty_blue),
                     getResources().getColor(R.color.dusty_blue),
                     animationLength);
             // make the view visible and start the animation

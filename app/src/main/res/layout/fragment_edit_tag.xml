@@ -4,7 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="#00000000"
     tools:context=".fragments.EditTagDialogFragment">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardCornerRadius="30dp">
 
     <LinearLayout
         android:id="@+id/verticalLayout"
@@ -15,9 +21,9 @@
         android:background="@color/white"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="24dp">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -26,6 +32,15 @@
             android:textColor="@color/orange"
             android:textSize="24sp"
             android:textStyle="bold"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:paddingLeft="15dip"
+            android:paddingRight="15dip"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:freezesText="true"
             tools:text="Doggo" />
 
         <TextView
@@ -43,12 +58,11 @@
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:layout_marginRight="16dp"
             android:clickable="true"
             android:scaleType="centerCrop"
-            android:tint="@color/light_blue"
-            app:srcCompat="@drawable/ic_baseline_person_24_grey"
+            app:srcCompat="@drawable/dog"
             tools:src="@tools:sample/avatars" />
 
         <LinearLayout
@@ -62,15 +76,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Located:"
+                android:layout_gravity="center_vertical"
                 android:textColor="@color/dark_grey"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginLeft="20dp"/>
 
             <Spinner
                 android:id="@+id/spDistance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:backgroundTint="@color/dark_grey"
+                android:popupBackground="@color/white"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -89,12 +107,15 @@
                 android:layout_marginEnd="4dp"
                 android:text="Heading:"
                 android:textColor="@color/dark_grey"
+                android:layout_marginLeft="20dp"
                 android:textSize="14sp" />
 
             <Spinner
                 android:id="@+id/spDirection"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/dark_grey"
+                android:popupBackground="@color/white"/>
         </LinearLayout>
 
         <LinearLayout
@@ -103,24 +124,29 @@
             android:layout_marginTop="16dp"
             android:orientation="horizontal">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/tvActive"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="16dp"
-                android:backgroundTint="@color/white"
-                android:text="Outdated"
-                android:textColor="@color/orange" />
+                style="@style/FlatRoundedButton"
+                android:layout_width="96dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="8dp"
+                android:text="Invalid"
+                android:textSize="12sp"
+                android:backgroundTint="@color/dusty_blue"
+                android:textColor="@color/white" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSave"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="96dp"
+                android:layout_height="40dp"
                 android:layout_alignParentBottom="true"
                 android:backgroundTint="@color/orange"
                 android:text="SAVE"
+                android:textSize="12sp"
+                style="@style/FlatRoundedButton"
                 android:textColor="@color/white" />
         </LinearLayout>
     </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </FrameLayout>

@@ -99,6 +99,7 @@ public class TagListFragment extends Fragment {
         queryTags(0);
     }
 
+    // TODO increment radius (by chunk unit) when furthest tag is past 75% of current radius
     private void queryTags(int page) {
         ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
         query.include(Tag.KEY_UPDATED_AT);
