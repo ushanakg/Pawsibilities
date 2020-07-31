@@ -104,7 +104,6 @@ public class EditTagDialogFragment extends CircularRevealDialogFragment {
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tag.setName(binding.tvName.getText().toString());
                 tag.setDirection(binding.spDirection.getSelectedItem().toString());
                 if (binding.spDistance.getSelectedItem().equals("My location")) {
                     tag.setLocation(userLocation);
@@ -115,7 +114,8 @@ public class EditTagDialogFragment extends CircularRevealDialogFragment {
     }
 
     public void sendBackResult() {
-        EditTagDialogFragment.EditTagDialogListener listener = (EditTagDialogFragment.EditTagDialogListener) getTargetFragment();
+        EditTagDialogFragment.EditTagDialogListener listener =
+                (EditTagDialogFragment.EditTagDialogListener) getTargetFragment();
         listener.onFinishEditDialog(tag);
         dismiss();
     }

@@ -45,6 +45,8 @@ import com.parse.SaveCallback;
 import java.io.File;
 import java.io.IOException;
 
+import es.dmoral.toasty.Toasty;
+
 import static android.app.Activity.RESULT_OK;
 
 public class CreateTagDialogFragment extends CircularRevealDialogFragment {
@@ -110,17 +112,19 @@ public class CreateTagDialogFragment extends CircularRevealDialogFragment {
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (photoFile == null) {
+                    Toasty.warning(getContext(), "Photo isn't provided", Toasty.LENGTH_SHORT).show();
+                    return;
+                }
 
+                tag.setPhoto(new ParseFile(photoFile));
                 String name = binding.etName.getText().toString();
                 if (name.isEmpty()) {
                     name = "Unnamed";
                 }
                 tag.setName(name);
-
-                if (photoFile != null) {
-                    tag.setPhoto(new ParseFile(photoFile));
-                }
                 tag.setDirection((String) binding.spDirection.getSelectedItem());
+
                 sendBackResult();
             }
         });
@@ -137,6 +141,8 @@ public class CreateTagDialogFragment extends CircularRevealDialogFragment {
                         .load(takenImage)
                         .transform(new CenterCrop(), new RoundedCorners(100))
                         .into(binding.ivPhoto);
+            } else {
+                Toasty.warning(getContext(), "No photo taken", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -145,11 +151,6 @@ public class CreateTagDialogFragment extends CircularRevealDialogFragment {
     public static File getPhotoFileUri(Context context, String fileName) {
         // Use `getExternalFilesDir` on Context to access package-specific directories.
         File mediaStorageDir = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
-
-        // Create the storage directory if it does not exist
-        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
-            Log.d(TAG, "failed to create directory");
-        }
 
         // Return the file target for the photo based on filename
         return new File(mediaStorageDir.getPath() + File.separator + fileName);

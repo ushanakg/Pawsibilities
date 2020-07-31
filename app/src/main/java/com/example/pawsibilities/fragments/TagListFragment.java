@@ -66,7 +66,6 @@ public class TagListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.rvShimmer.showShimmerAdapter();
 
         tagList = new ArrayList<>();
         adapter = new TagAdapter(getContext(), tagList);
@@ -101,6 +100,8 @@ public class TagListFragment extends Fragment {
 
     // TODO increment radius (by chunk unit) when furthest tag is past 75% of current radius
     private void queryTags(int page) {
+        binding.rvShimmer.showShimmerAdapter();
+
         ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
         query.include(Tag.KEY_UPDATED_AT);
         query.setLimit(10);

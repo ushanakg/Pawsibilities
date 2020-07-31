@@ -17,7 +17,6 @@ import com.example.pawsibilities.fragments.DetailedTagDialogFragment;
 import com.example.pawsibilities.fragments.MapsFragment;
 import com.parse.ParseUser;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 

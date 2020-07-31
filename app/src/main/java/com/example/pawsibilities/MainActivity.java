@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         int cy = mainBinding.fabCreateTag.getMeasuredHeight() / 2;
 
         int initialRadius = mainBinding.fabCreateTag.getWidth() / 2;
-        Animator anim = ViewAnimationUtils.createCircularReveal(mainBinding.fabCreateTag, cx, cy, initialRadius, 0);
+         Animator anim = ViewAnimationUtils.createCircularReveal(mainBinding.fabCreateTag, cx, cy, initialRadius, 0);
 
         // make the view invisible when the animation is done
         anim.addListener(new AnimatorListenerAdapter() {
