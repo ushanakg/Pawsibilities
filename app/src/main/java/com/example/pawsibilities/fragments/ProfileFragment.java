@@ -2,7 +2,6 @@ package com.example.pawsibilities.fragments;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Build;
@@ -23,11 +22,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.pawsibilities.LoginActivity;
-import com.example.pawsibilities.R;
 import com.example.pawsibilities.databinding.FragmentProfileBinding;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
@@ -36,6 +32,8 @@ import com.parse.SaveCallback;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+
+import es.dmoral.toasty.Toasty;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -115,7 +113,6 @@ public class ProfileFragment extends Fragment {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
 
         if (intent.resolveActivity(getContext().getPackageManager()) != null) {
-            // Start the image capture intent to take photo
             startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
         }
     }
@@ -140,9 +137,13 @@ public class ProfileFragment extends Fragment {
             Uri photoUri = data.getData();
             bmp = loadFromUri(photoUri);
         }
+
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 bmp = CreateTagDialogFragment.rotateBitmapOrientation(photoFile.getAbsolutePath());
+            } else {
+                Toasty.warning(getContext(), "No photo taken", Toast.LENGTH_SHORT).show();
+                return;
             }
         }
 
@@ -164,6 +165,8 @@ public class ProfileFragment extends Fragment {
                     }
                 }
             });
+        } else {
+            Toasty.warning(getContext(), "No photo selected", Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -1,8 +1,6 @@
 package com.example.pawsibilities;
 
-import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +10,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pawsibilities.databinding.ItemTagBinding;
-import com.example.pawsibilities.fragments.CreateTagDialogFragment;
 import com.example.pawsibilities.fragments.DetailedTagDialogFragment;
 import com.example.pawsibilities.fragments.MapsFragment;
 import com.parse.ParseUser;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -123,9 +119,8 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder> {
         private void bind(Tag t) {
             tag = t;
             binding.tvName.setText(t.getName());
-            // TODO make text resource string
             binding.tvDistance.setText(t.distanceFrom(ParseUser.getCurrentUser()
-                    .getParseGeoPoint(MapsFragment.KEY_LOCATION)) + " miles away");
+                    .getParseGeoPoint(MapsFragment.KEY_LOCATION)) + context.getString(R.string.milesaway));
             binding.tvWalk.setText(t.getWalkingTime());
         }
 

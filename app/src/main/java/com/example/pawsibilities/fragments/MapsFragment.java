@@ -158,6 +158,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
             @Override
             public void done(List<Tag> queried, ParseException e) {
                 if (e != null) {
+                    Toasty.error(getContext(), "Couldn't load tags", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "issue with getting Tags", e);
                     return;
                 }
@@ -249,9 +250,9 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
             public void done(ParseException e) {
                 if (e != null) {
                     Toasty.error(getContext(), "Failed", Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "Unable to mark tag outdated", e);
+                    Log.e(TAG, "Unable to update tag", e);
                 } else {
-                    Toasty.success(getContext(), "Updated!", Toast.LENGTH_SHORT).show();
+                    Toasty.success(getContext(), "Success!", Toast.LENGTH_SHORT).show();
                     map.clear();
                     displayTags();
                 }
@@ -285,8 +286,8 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "Error trying to get last GPS location");
-                        e.printStackTrace();
+                        Toasty.error(getContext(), "Coudln't load last GPS location", Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Error trying to get last GPS location", e);
                     }
                 });
     }

@@ -1,13 +1,10 @@
 package com.example.pawsibilities.fragments;
 
-import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +21,6 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class EditTagDialogFragment extends CircularRevealDialogFragment {
 
@@ -77,12 +73,12 @@ public class EditTagDialogFragment extends CircularRevealDialogFragment {
 
         // dropdown for location
         ArrayList<String> lst = new ArrayList<>();
-        lst.add("Your location");
+        lst.add(getString(R.string.yourlocation));
         ArrayAdapter<String> locationAdapter = new ArrayAdapter<>
                 (getContext(), R.layout.location_spinner_item, lst);
         locationAdapter.setDropDownViewResource(R.layout.location_spinner_item);
         binding.spDistance.setAdapter(locationAdapter);
-        locationAdapter.add(tag.distanceFrom(userLocation) + " mi away");
+        locationAdapter.add(tag.distanceFrom(userLocation) + getString(R.string.milesaway));
         locationAdapter.notifyDataSetChanged();
         binding.spDistance.setSelection(1);
 
@@ -104,9 +100,8 @@ public class EditTagDialogFragment extends CircularRevealDialogFragment {
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tag.setName(binding.tvName.getText().toString());
                 tag.setDirection(binding.spDirection.getSelectedItem().toString());
-                if (binding.spDistance.getSelectedItem().equals("My location")) {
+                if (binding.spDistance.getSelectedItem().equals(getString(R.string.yourlocation))) {
                     tag.setLocation(userLocation);
                 }
                 sendBackResult();
@@ -115,7 +110,8 @@ public class EditTagDialogFragment extends CircularRevealDialogFragment {
     }
 
     public void sendBackResult() {
-        EditTagDialogFragment.EditTagDialogListener listener = (EditTagDialogFragment.EditTagDialogListener) getTargetFragment();
+        EditTagDialogFragment.EditTagDialogListener listener =
+                (EditTagDialogFragment.EditTagDialogListener) getTargetFragment();
         listener.onFinishEditDialog(tag);
         dismiss();
     }

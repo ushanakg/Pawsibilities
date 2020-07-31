@@ -13,13 +13,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.pawsibilities.EndlessRecyclerViewScrollListener;
-import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.TagAdapter;
 import com.example.pawsibilities.databinding.FragmentTagListBinding;
@@ -34,7 +32,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
@@ -66,7 +63,6 @@ public class TagListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.rvShimmer.showShimmerAdapter();
 
         tagList = new ArrayList<>();
         adapter = new TagAdapter(getContext(), tagList);
@@ -101,6 +97,8 @@ public class TagListFragment extends Fragment {
 
     // TODO increment radius (by chunk unit) when furthest tag is past 75% of current radius
     private void queryTags(int page) {
+        binding.rvShimmer.showShimmerAdapter();
+
         ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
         query.include(Tag.KEY_UPDATED_AT);
         query.setLimit(10);

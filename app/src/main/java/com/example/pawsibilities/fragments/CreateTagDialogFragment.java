@@ -4,13 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.location.Location;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,12 +12,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,14 +27,14 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentCreateTagBinding;
-import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.io.File;
 import java.io.IOException;
+
+import es.dmoral.toasty.Toasty;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -96,9 +87,9 @@ public class CreateTagDialogFragment extends CircularRevealDialogFragment {
         });
 
         if (userLocation.equals(tag.getLocation())) {
-            binding.tvDistance.setText("Your current location");
+            binding.tvDistance.setText(getString(R.string.yourlocation));
         } else {
-            binding.tvDistance.setText(tag.distanceFrom(userLocation) + " miles away");
+            binding.tvDistance.setText(tag.distanceFrom(userLocation) + getString(R.string.milesaway));
         }
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
@@ -110,17 +101,19 @@ public class CreateTagDialogFragment extends CircularRevealDialogFragment {
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (photoFile == null) {
+                    Toasty.warning(getContext(), "Photo isn't provided", Toasty.LENGTH_SHORT).show();
+                    return;
+                }
 
+                tag.setPhoto(new ParseFile(photoFile));
                 String name = binding.etName.getText().toString();
                 if (name.isEmpty()) {
                     name = "Unnamed";
                 }
                 tag.setName(name);
-
-                if (photoFile != null) {
-                    tag.setPhoto(new ParseFile(photoFile));
-                }
                 tag.setDirection((String) binding.spDirection.getSelectedItem());
+
                 sendBackResult();
             }
         });
@@ -137,6 +130,8 @@ public class CreateTagDialogFragment extends CircularRevealDialogFragment {
                         .load(takenImage)
                         .transform(new CenterCrop(), new RoundedCorners(100))
                         .into(binding.ivPhoto);
+            } else {
+                Toasty.warning(getContext(), "No photo taken", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -145,11 +140,6 @@ public class CreateTagDialogFragment extends CircularRevealDialogFragment {
     public static File getPhotoFileUri(Context context, String fileName) {
         // Use `getExternalFilesDir` on Context to access package-specific directories.
         File mediaStorageDir = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
-
-        // Create the storage directory if it does not exist
-        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
-            Log.d(TAG, "failed to create directory");
-        }
 
         // Return the file target for the photo based on filename
         return new File(mediaStorageDir.getPath() + File.separator + fileName);
