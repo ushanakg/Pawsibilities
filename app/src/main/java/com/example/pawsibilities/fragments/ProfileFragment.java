@@ -2,6 +2,7 @@ package com.example.pawsibilities.fragments;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Build;
@@ -22,16 +23,24 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.pawsibilities.LoginActivity;
+import com.example.pawsibilities.R;
+import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentProfileBinding;
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import es.dmoral.toasty.Toasty;
 
@@ -42,13 +51,15 @@ public class ProfileFragment extends Fragment {
     private static final String KEY_PROFILE = "profile";
     private static final String TAG = "ProfileFragment";
     private GestureDetector detector;
-    private ParseUser currentUser;
+    private ParseUser user;
     private FragmentProfileBinding profileBinding;
 
     private final static int PICK_PHOTO_CODE = 1046;
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 23;
     private File photoFile;
     private static final String photoFileName = "profilephoto.jpg";
+
+    public final static String NUM_TAGS_DROPPED = "numTagsDropped";
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -67,13 +78,16 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         detector = new GestureDetector(getContext(), new GestureListener());
-        currentUser = ParseUser.getCurrentUser();
+        user = ParseUser.getCurrentUser();
 
         // display user info
-        profileBinding.tvUsername.setText(currentUser.getUsername());
-        ParseFile profile = currentUser.getParseFile(KEY_PROFILE);
+        profileBinding.tvUsername.setText(user.getUsername());
+        ParseFile profile = user.getParseFile(KEY_PROFILE);
         if (profile != null) {
-            Glide.with(getContext()).load(profile.getUrl()).circleCrop().into(profileBinding.ivProfile);
+            Glide.with(getContext())
+                    .load(profile.getUrl())
+                    .transform(new CenterCrop(), new RoundedCorners(150))
+                    .into(profileBinding.ivProfile);
         }
 
         profileBinding.ivProfile.setOnTouchListener(new View.OnTouchListener() {
@@ -100,6 +114,49 @@ public class ProfileFragment extends Fragment {
                 Intent i = new Intent(getContext(), LoginActivity.class);
                 startActivity(i);
                 getActivity().finish();
+            }
+        });
+
+        profileBinding.tvNumTagsDropped.setText(Integer.toString(user.getInt(NUM_TAGS_DROPPED)));
+        profileBinding.tvLocation.setText(parseGeoPointToDMS(user.getParseGeoPoint(MapsFragment.KEY_LOCATION)));
+
+        queryTag();
+    }
+
+    private String parseGeoPointToDMS(ParseGeoPoint p) {
+        String latitude = decimalToDMS(p.getLatitude());
+        String longitude = decimalToDMS(p.getLongitude());
+        return String.format("%s N, %s W", latitude, longitude);
+    }
+
+    // converts longitude/latitude from decimal format to Degrees, Minutes, Seconds
+    private String decimalToDMS(double d) {
+        d = Math.abs(d);
+        int degree = (int) d;
+        d = (d - degree) * 60;
+        int minute = (int) d;
+        d = (d - minute) * 60;
+        int second = (int) d;
+        return String.format("%d\u00B0 %d\u2032 %d\u2033", degree, minute, second);
+    }
+
+    // queries nearest tag and sets text in tvNearestTag
+    private void queryTag() {
+        ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
+        query.setLimit(1);
+        query.whereNear(Tag.KEY_LOCATION, user.getParseGeoPoint(MapsFragment.KEY_LOCATION));
+        query.whereEqualTo(Tag.KEY_ACTIVE, true);
+        query.findInBackground(new FindCallback<Tag>() {
+            @Override
+            public void done(List<Tag> queried, ParseException e) {
+                if (e != null) {
+                    profileBinding.tvNearestTag.setText(getString(R.string.blank));
+                    Log.e(TAG, "issue with getting Tags", e);
+                    return;
+                }
+                profileBinding.tvNearestTag.setText(
+                        queried.get(0).distanceFrom(user.getParseGeoPoint(MapsFragment.KEY_LOCATION))
+                                + getString(R.string.mi));
             }
         });
     }
@@ -149,7 +206,10 @@ public class ProfileFragment extends Fragment {
 
         if (bmp != null) {
             // set image into profile pic view
-            Glide.with(getContext()).load(bmp).circleCrop().into(profileBinding.ivProfile);
+            Glide.with(getContext())
+                    .load(bmp)
+                    .transform(new CenterCrop(), new RoundedCorners(100))
+                    .into(profileBinding.ivProfile);
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bmp.compress(Bitmap.CompressFormat.PNG, 50, stream);
@@ -171,8 +231,8 @@ public class ProfileFragment extends Fragment {
     }
 
     private void saveUserProfile(ParseFile parseFile) {
-        currentUser.put(KEY_PROFILE, parseFile);
-        currentUser.saveInBackground(new SaveCallback() {
+        user.put(KEY_PROFILE, parseFile);
+        user.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if (e != null) {
@@ -204,6 +264,7 @@ public class ProfileFragment extends Fragment {
 
         @Override
         public boolean onDown(MotionEvent e) {
+            profileBinding.ivProfile.setColorFilter(Color.parseColor("#77000000"));
             return true;
         }
 
@@ -214,6 +275,7 @@ public class ProfileFragment extends Fragment {
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
+            profileBinding.ivProfile.clearColorFilter();
             onPickPhoto(profileBinding.ivProfile);
             return super.onSingleTapConfirmed(e);
         }
@@ -225,6 +287,7 @@ public class ProfileFragment extends Fragment {
 
         @Override
         public boolean onDoubleTapEvent(MotionEvent e) {
+            profileBinding.ivProfile.clearColorFilter();
             // 0 on the first tap, 1 on the second, resets if enough time has passed
             // so that two spaced out taps do not count as a double tap
             if (e.getAction() == 1) {
