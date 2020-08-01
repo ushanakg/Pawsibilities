@@ -82,13 +82,21 @@ public class ProfileFragment extends Fragment {
 
         // display user info
         profileBinding.tvUsername.setText(user.getUsername());
-        ParseFile profile = user.getParseFile(KEY_PROFILE);
-        if (profile != null) {
-            Glide.with(getContext())
-                    .load(profile.getUrl())
-                    .transform(new CenterCrop(), new RoundedCorners(150))
-                    .into(profileBinding.ivProfile);
-        }
+
+        ParseQuery<ParseUser> query = ParseQuery.getQuery(ParseUser.class);
+        query.whereEqualTo("objectId", user.getObjectId());
+        query.findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> objects, ParseException e) {
+                ParseFile profile = objects.get(0).getParseFile(KEY_PROFILE);
+                if (profile != null) {
+                    Glide.with(getContext())
+                            .load(profile.getUrl())
+                            .transform(new RoundedCorners(150))
+                            .into(profileBinding.ivProfile);
+                }
+            }
+        });
 
         profileBinding.ivProfile.setOnTouchListener(new View.OnTouchListener() {
             @Override
