@@ -17,8 +17,4 @@
     <string name="miaway">&#160;mi away</string>
     <string name="milesaway">&#160;miles away</string>
     <string name="yourlocation"> Your location</string>
-    <string name="nearesttag">Nearest Tag</string>
-    <string name="tagsdropped">Tags Dropped</string>
-    <string name="mi">&#160;mi</string>
-    <string name="blank">---</string>
 </resources>

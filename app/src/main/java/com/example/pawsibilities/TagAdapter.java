@@ -93,7 +93,7 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder> {
                 low++;
             }
 
-            while (high >= 0 && tagList.get(high).getWalkingTimeValue() > pivot.getWalkingTimeValue()) {
+            while (high >= 0 &&tagList.get(high).getWalkingTimeValue() > pivot.getWalkingTimeValue()) {
                 high--;
             }
 

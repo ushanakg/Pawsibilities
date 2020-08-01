@@ -10,7 +10,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pawsibilities.databinding.ActivitySignupBinding;
-import com.example.pawsibilities.fragments.ProfileFragment;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
@@ -36,11 +35,6 @@ public class SignupActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String username = signupBinding.etUsername.getText().toString();
                 String password = signupBinding.etPassword.getText().toString();
-
-                if (username.isEmpty() || password.isEmpty()) {
-                    Toasty.warning(SignupActivity.this, "Invalid username/password", Toast.LENGTH_SHORT).show();
-                    return;
-                }
                 signupUser(username, password);
             }
         });
@@ -52,7 +46,6 @@ public class SignupActivity extends AppCompatActivity {
         ParseUser user = new ParseUser();
         user.setUsername(username);
         user.setPassword(password);
-        user.put(ProfileFragment.NUM_TAGS_DROPPED, 0);
 
         user.signUpInBackground(new SignUpCallback() {
             public void done(ParseException e) {
