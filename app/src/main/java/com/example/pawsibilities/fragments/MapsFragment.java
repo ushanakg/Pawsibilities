@@ -230,6 +230,9 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                     Log.e(TAG, "save in background for new tag failed", e);
                 } else {
                     Toasty.success(getContext(), "Success!", Toast.LENGTH_SHORT).show();
+
+                    user.put(ProfileFragment.NUM_TAGS_DROPPED, user.getInt(ProfileFragment.NUM_TAGS_DROPPED) + 1);
+                    user.saveInBackground();
                 }
             }
         });
