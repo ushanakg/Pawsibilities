@@ -37,21 +37,28 @@ This app allows dog-lovers to find dogs to pet near them, and also allows users 
 * Users can create a tag (through a separate view) at their current location that includes the dog's name, photo, and a direction of travel
   * When the user adds a tag, the tag "drops" to the map (animation)
 * Clicking on a tag allows the user to view details such as name of the dog, photo, when the tag was last updated, the direction of travel, and how far away the tag is from the user
-* Users can update tags (through a separate view) dropped by others: e.g. marking tags outdated and changing the tag's location
-* Tags on the map in the visible map view loaded when map is opened/moved
-* Users can view a list view of tags, sorted by least to greatest distance from the user's current location
-* [double tap]
-* Incorportates an external library to add visual polish
+* Users can update tags (through a separate view) dropped by others: e.g. marking tags as invalid and changing the tag's location
+* Tags on the map in the visible map view are loaded when map is opened/moved
+* Users can view a list view of tags, sorted in ascending order by the amount of time it would take to walk to the tag
+  * This list can be refreshed by swiping, and infinitely scrolls
+* Users can double tap to launch the camera and take a picture for their profile.
+* Incorporates an external library to add visual polish
 
 **Optional Nice-to-have Stories**
-* Creation/edit views are modal overlays instead of separate activities
-* Users are notified when a tag within 2 miles of their current location is posted
-    * Notification radius is made visible on the map 
-* Users can connect with each other receive a notification every time a user in your network drops a tag
+* When signing in, the user's password is hidden
+* Floating action button which allows users to create tags is revealed and hidden with a circular reveal animation
+* Creation/edit/detailed tag views are modal overlays instead of separate activities
+  * These modal overlays open with a circular reveal animation
+* Users can see the username and profile picture of the user that has dropped the tag
 * Users can edit their profile
     * Users can select/take their profile photo
     * User can change their notification radius
-* User profile's can show how many tags a user has dropped
+* In addition to the bottom navigation view, users can swipe between the three main screens
+* Users can see the app's launcher icon on their device's home screen
+* Users can see the app's logo on the landing page of the app
+* User profile's can show how many tags a user has dropped as well as the distance of the nearest tag from them
+* Users are notified when a tag within a given radius of their current location is dropped
+    * Notification radius is made visible on the map 
 
 ### 2. Screen Archetypes
 
