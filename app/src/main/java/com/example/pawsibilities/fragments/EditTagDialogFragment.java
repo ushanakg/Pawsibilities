@@ -78,7 +78,7 @@ public class EditTagDialogFragment extends CircularRevealDialogFragment {
                 (getContext(), R.layout.location_spinner_item, lst);
         locationAdapter.setDropDownViewResource(R.layout.location_spinner_item);
         binding.spDistance.setAdapter(locationAdapter);
-        locationAdapter.add(tag.distanceFrom(userLocation) + getString(R.string.milesaway));
+        locationAdapter.add(tag.distanceFrom(userLocation) + getString(R.string.miaway));
         locationAdapter.notifyDataSetChanged();
         binding.spDistance.setSelection(1);
 
