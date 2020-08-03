@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ProfileFragment">
+    tools:context=".fragments.ProfileFragment"
+     >
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/light_blue"
-        android:padding="32dp">
+        android:padding="8dp">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvUsername"
@@ -49,7 +50,7 @@
             android:layout_height="300dp"
             android:layout_below="@+id/bar1"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             app:srcCompat="@drawable/ic_baseline_person_24" />
 
         <TextView
@@ -58,7 +59,7 @@
             android:layout_height="4dp"
             android:layout_below="@id/ivProfile"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:background="@color/orange" />
 
         <LinearLayout
@@ -164,9 +165,30 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
-
         </LinearLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/TagInfoOutlinedEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/statsLayout"
+            app:boxBackgroundColor="@color/light_blue"
+            android:layout_alignStart="@+id/ivProfile"
+            android:layout_alignEnd="@+id/ivProfile"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="0dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etRadius"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Notification radius"
+                android:scrollHorizontally="true"
+                android:inputType="numberDecimal"
+                android:singleLine="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogOut"

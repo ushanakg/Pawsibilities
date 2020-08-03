@@ -53,6 +53,7 @@ public class SignupActivity extends AppCompatActivity {
         user.setUsername(username);
         user.setPassword(password);
         user.put(ProfileFragment.NUM_TAGS_DROPPED, 0);
+        user.put(ProfileFragment.KEY_RADIUS, 3.21); // default radius of 2 miles
 
         user.signUpInBackground(new SignUpCallback() {
             public void done(ParseException e) {
