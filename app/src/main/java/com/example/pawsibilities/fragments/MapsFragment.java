@@ -3,6 +3,7 @@ package com.example.pawsibilities.fragments;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -38,6 +39,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -76,6 +79,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
     private ParseUser user;
     private List<Tag> tags;
     private Bitmap smallMarker;
+    private Circle userRadius;
 
     private final long UPDATE_INTERVAL_IN_SEC = 60000;  /* 60 secs */
     private final long FASTEST_INTERVAL_IN_SEC = 5000; /* 5 secs */
@@ -104,6 +108,11 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
         user = ParseUser.getCurrentUser();
         tags = new ArrayList<>();
 
+        // prepare custom map marker
+        BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.drawable.map_marker);
+        Bitmap b = bitmapdraw.getBitmap();
+        smallMarker = Bitmap.createScaledBitmap(b, 100, 100, false);
+
         mapFragment = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map));
         if (mapFragment != null) {
             mapFragment.getMapAsync(new OnMapReadyCallback() {
@@ -116,12 +125,24 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
             Toasty.error(getContext(), "Map couldn't load!", Toast.LENGTH_SHORT).show();
         }
 
-        ((MainActivity )getActivity()).setListener(this);
+        ((MainActivity) getActivity()).setListener(this);
+    }
 
-        // prepare custom map marker
-        BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.drawable.map_marker);
-        Bitmap b = bitmapdraw.getBitmap();
-        smallMarker = Bitmap.createScaledBitmap(b, 100, 100, false);
+    private void updateUserLocation(Location newLocation) {
+        mCurrentLocation = newLocation;
+        user.put(KEY_LOCATION, new ParseGeoPoint(newLocation.getLatitude(), newLocation.getLongitude()));
+        user.saveInBackground();
+
+    }
+
+    private void displayUserRadius() {
+        // TODO edit radius based on user preference
+        userRadius = map.addCircle(new CircleOptions()
+                .center(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()))
+                .radius(2000) // TODO make radius changeable
+                .strokeWidth(4)
+                .strokeColor(ContextCompat.getColor(getContext(), R.color.dusty_blue))
+                .fillColor(ContextCompat.getColor(getContext(), R.color.translucent_dusty_blue)));
     }
 
     protected void loadMap(GoogleMap googleMap) {
@@ -281,7 +302,8 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null) {
-                            mCurrentLocation = location;
+
+                            updateUserLocation(location);
                             centerOnCurrentLocation();
                         }
                     }
@@ -350,9 +372,8 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
         getFusedLocationProviderClient(getContext()).requestLocationUpdates(mLocationRequest, new LocationCallback() {
                     @Override
                     public void onLocationResult(LocationResult locationResult) {
-                        mCurrentLocation = locationResult.getLastLocation();
-                        user.put(KEY_LOCATION, new ParseGeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
-                        user.saveInBackground();
+                        updateUserLocation(locationResult.getLastLocation());
+
                     }
                 }, Looper.myLooper());
     }
@@ -362,6 +383,9 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
         LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
 
         map.clear();
+        if (mCurrentLocation != null) {
+            displayUserRadius();
+        }
         queryTags(bounds);
     }
 

@@ -4,6 +4,7 @@
     <color name="white">#F7F7FF</color>
     <color name="light_blue">#BDD5EA</color>
     <color name="dusty_blue">#577399</color>
+    <color name="translucent_dusty_blue">#77577399</color>
     <color name="dark_grey">#495867</color>
 
     <color name="mtrl_textinput_default_box_stroke_color">@color/dusty_blue</color>
