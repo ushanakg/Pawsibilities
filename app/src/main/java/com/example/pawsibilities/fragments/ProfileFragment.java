@@ -14,6 +14,8 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -60,6 +62,8 @@ public class ProfileFragment extends Fragment {
     private static final String photoFileName = "profilephoto.jpg";
 
     public final static String NUM_TAGS_DROPPED = "numTagsDropped";
+    public final static String KEY_RADIUS = "radius";
+
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -80,23 +84,59 @@ public class ProfileFragment extends Fragment {
         detector = new GestureDetector(getContext(), new GestureListener());
         user = ParseUser.getCurrentUser();
 
-        // display user info
-        profileBinding.tvUsername.setText(user.getUsername());
+        final TextWatcher watcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.toString().isEmpty()) {
+                    user.put(KEY_RADIUS, 0);
+                } else {
+                    user.put(KEY_RADIUS, Double.parseDouble(editable.toString()));
+                }
+                user.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e != null) {
+                            Log.e(TAG, "saving radius failed", e);
+                            Toasty.error(getContext(), "Update failed", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+                });
+            }
+        };
 
         ParseQuery<ParseUser> query = ParseQuery.getQuery(ParseUser.class);
-        query.whereEqualTo("objectId", user.getObjectId());
+        query.whereEqualTo("objectId", ParseUser.getCurrentUser().getObjectId());
         query.findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(List<ParseUser> objects, ParseException e) {
-                ParseFile profile = objects.get(0).getParseFile(KEY_PROFILE);
+                user = objects.get(0);
+                ParseFile profile = user.getParseFile(KEY_PROFILE);
                 if (profile != null) {
                     Glide.with(getContext())
                             .load(profile.getUrl())
                             .transform(new RoundedCorners(150))
                             .into(profileBinding.ivProfile);
                 }
+
+                profileBinding.etRadius.setText(user.getDouble(KEY_RADIUS) + "");
+                profileBinding.etRadius.addTextChangedListener(watcher);
             }
         });
+
+        // display user info
+        profileBinding.tvUsername.setText(user.getUsername());
+        profileBinding.tvNumTagsDropped.setText(Integer.toString(user.getInt(NUM_TAGS_DROPPED)));
+        profileBinding.tvLocation.setText(parseGeoPointToDMS(user.getParseGeoPoint(MapsFragment.KEY_LOCATION)));
+
 
         profileBinding.ivProfile.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -124,9 +164,6 @@ public class ProfileFragment extends Fragment {
                 getActivity().finish();
             }
         });
-
-        profileBinding.tvNumTagsDropped.setText(Integer.toString(user.getInt(NUM_TAGS_DROPPED)));
-        profileBinding.tvLocation.setText(parseGeoPointToDMS(user.getParseGeoPoint(MapsFragment.KEY_LOCATION)));
 
         queryTag();
     }
@@ -245,7 +282,10 @@ public class ProfileFragment extends Fragment {
             public void done(ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "saving user profile photo failed", e);
+                    Toasty.error(getContext(), "Update failed", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+                Toasty.success(getContext(), "Updated!", Toast.LENGTH_SHORT).show();
             }
         });
     }

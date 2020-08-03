@@ -22,6 +22,8 @@ import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.pawsibilities.MainActivity;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
@@ -49,6 +51,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -106,6 +109,8 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
         }
 
         user = ParseUser.getCurrentUser();
+        queryUser();
+
         tags = new ArrayList<>();
 
         // prepare custom map marker
@@ -135,11 +140,22 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
 
     }
 
+    private void queryUser() {
+        ParseQuery<ParseUser> query = ParseQuery.getQuery(ParseUser.class);
+        query.whereEqualTo("objectId", ParseUser.getCurrentUser().getObjectId());
+        query.findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> objects, ParseException e) {
+                user = objects.get(0);
+            }
+        });
+    }
+
     private void displayUserRadius() {
-        // TODO edit radius based on user preference
+        queryUser();
         userRadius = map.addCircle(new CircleOptions()
                 .center(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()))
-                .radius(2000) // TODO make radius changeable
+                .radius(user.getDouble(ProfileFragment.KEY_RADIUS) * 1600) // convert radius from miles to meters
                 .strokeWidth(4)
                 .strokeColor(ContextCompat.getColor(getContext(), R.color.dusty_blue))
                 .fillColor(ContextCompat.getColor(getContext(), R.color.translucent_dusty_blue)));
@@ -324,7 +340,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
 
         CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(),
                 mCurrentLocation.getLongitude()));
-        CameraUpdate zoom = CameraUpdateFactory.zoomTo(13);
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(11);
         map.moveCamera(center);
         map.animateCamera(zoom);
     }
@@ -341,6 +357,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
         // Display the connection status
         if (mCurrentLocation != null) {
             centerOnCurrentLocation();
+            displayUserRadius();
         }
         MapsFragmentPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
     }
