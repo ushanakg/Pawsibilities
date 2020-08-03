@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +18,14 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentDetailedTagBinding;
+import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import java.util.List;
 
 
 public class DetailedTagDialogFragment extends CircularRevealDialogFragment {
@@ -72,6 +78,21 @@ public class DetailedTagDialogFragment extends CircularRevealDialogFragment {
         binding.tvTimeAgo.setText("Updated " + tag.getRelativeTimeAgo());
         binding.tvDistance.setText(tag.distanceFrom(userLocation) + " miles away");
         binding.tvDirection.setText("Heading: " + tag.getDirection());
+
+        ParseUser user = tag.getDroppedBy();
+        try {
+            user.fetchIfNeeded();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        ParseFile profile = user.getParseFile(ProfileFragment.KEY_PROFILE);
+        if (profile != null) {
+            Glide.with(getContext())
+                    .load(profile.getUrl())
+                    .circleCrop()
+                    .into(binding.ivUserProfile);
+        }
+        binding.tvUsername.setText(user.getString("username"));
     }
 
     @Override

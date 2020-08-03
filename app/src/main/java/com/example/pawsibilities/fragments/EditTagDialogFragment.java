@@ -16,6 +16,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentEditTagBinding;
+import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
@@ -107,6 +108,21 @@ public class EditTagDialogFragment extends CircularRevealDialogFragment {
                 sendBackResult();
             }
         });
+
+        ParseUser user = tag.getDroppedBy();
+        try {
+            user.fetchIfNeeded();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        ParseFile profile = user.getParseFile(ProfileFragment.KEY_PROFILE);
+        if (profile != null) {
+            Glide.with(getContext())
+                    .load(profile.getUrl())
+                    .circleCrop()
+                    .into(binding.ivUserProfile);
+        }
+        binding.tvUsername.setText(user.getString("username"));
     }
 
     public void sendBackResult() {
