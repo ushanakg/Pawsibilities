@@ -189,6 +189,7 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
 
         ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
         query.include(Tag.KEY_UPDATED_AT);
+        query.include(Tag.KEY_DROPPED_BY);
         query.whereEqualTo(Tag.KEY_ACTIVE, true);
         query.whereWithinPolygon(Tag.KEY_LOCATION, boundsToBox(bounds));
         query.findInBackground(new FindCallback<Tag>() {

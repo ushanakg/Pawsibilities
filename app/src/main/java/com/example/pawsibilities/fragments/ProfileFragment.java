@@ -50,7 +50,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class ProfileFragment extends Fragment {
 
-    private static final String KEY_PROFILE = "profile";
+    public static final String KEY_PROFILE = "profile";
     private static final String TAG = "ProfileFragment";
     private GestureDetector detector;
     private ParseUser user;
