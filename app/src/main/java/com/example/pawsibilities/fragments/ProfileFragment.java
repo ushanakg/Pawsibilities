@@ -118,13 +118,15 @@ public class ProfileFragment extends Fragment {
         query.findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(List<ParseUser> objects, ParseException e) {
-                user = objects.get(0);
-                ParseFile profile = user.getParseFile(KEY_PROFILE);
-                if (profile != null) {
-                    Glide.with(getContext())
-                            .load(profile.getUrl())
-                            .transform(new RoundedCorners(150))
-                            .into(profileBinding.ivProfile);
+                if (objects != null) {
+                    user = objects.get(0);
+                    ParseFile profile = user.getParseFile(KEY_PROFILE);
+                    if (profile != null) {
+                        Glide.with(getContext())
+                                .load(profile.getUrl())
+                                .transform(new RoundedCorners(150))
+                                .into(profileBinding.ivProfile);
+                    }
                 }
 
                 profileBinding.etRadius.setText(user.getDouble(KEY_RADIUS) + "");
