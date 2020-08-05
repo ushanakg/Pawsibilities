@@ -146,7 +146,9 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
         query.findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(List<ParseUser> objects, ParseException e) {
-                user = objects.get(0);
+                if (objects != null) {
+                    user = objects.get(0);
+                }
             }
         });
     }

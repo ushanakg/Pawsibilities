@@ -56,5 +56,5 @@ dependencies {
     implementation 'com.codepath.libraries:asynchttpclient:0.0.9'
     implementation "androidx.cardview:cardview:1.0.0"
     implementation 'com.google.android.material:material:<version>'
-
+    implementation "com.airbnb.android:lottie:3.4.0"
 }
