@@ -20,7 +20,7 @@ public class AnimationActivity extends AppCompatActivity {
         binding = ActivityAnimationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        if (android.os.Build.VERSION.SDK_INT < 21) {
+        if (android.os.Build.VERSION.SDK_INT >= 21) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
             getSupportActionBar().setElevation(0);
 
