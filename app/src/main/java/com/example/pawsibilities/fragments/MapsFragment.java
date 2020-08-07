@@ -148,6 +148,8 @@ public class MapsFragment extends Fragment implements CreateTagDialogFragment.Cr
             public void done(List<ParseUser> objects, ParseException e) {
                 if (objects != null) {
                     user = objects.get(0);
+                } else {
+                    Toasty.warning(getContext(), "Some data unavailable", Toast.LENGTH_SHORT).show();
                 }
             }
         });
