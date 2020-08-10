@@ -1,7 +1,9 @@
 package com.example.pawsibilities.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.ImageDecoder;
 import android.net.Uri;
@@ -13,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,6 +30,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.example.pawsibilities.BitmapScaler;
 import com.example.pawsibilities.LoginActivity;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
@@ -59,7 +63,7 @@ public class ProfileFragment extends Fragment {
     private final static int PICK_PHOTO_CODE = 1046;
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 23;
     private File photoFile;
-    private static final String photoFileName = "profilephoto.jpg";
+    private static final String photoFileName = "profile_pic.jpg";
 
     public final static String NUM_TAGS_DROPPED = "numTagsDropped";
     public final static String KEY_RADIUS = "radius";
@@ -117,6 +121,13 @@ public class ProfileFragment extends Fragment {
         queryUser();
 
         profileBinding.tvUsername.setText(user.getUsername());
+        ParseFile profile = user.getParseFile(KEY_PROFILE);
+        if (profile != null) {
+            Glide.with(getContext())
+                    .load(profile.getUrl())
+                    .transform(new CenterCrop(), new RoundedCorners(150))
+                    .into(profileBinding.ivProfile);
+        }
 
         profileBinding.ivProfile.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -150,30 +161,17 @@ public class ProfileFragment extends Fragment {
 
 
     private void queryUser() {
-        ParseQuery<ParseUser> query = ParseQuery.getQuery(ParseUser.class);
-        query.whereEqualTo("objectId", ParseUser.getCurrentUser().getObjectId());
-        query.findInBackground(new FindCallback<ParseUser>() {
-            @Override
-            public void done(List<ParseUser> objects, ParseException e) {
-                if (objects != null) {
-                    user = objects.get(0);
-                    ParseFile profile = user.getParseFile(KEY_PROFILE);
-                    if (profile != null) {
-                        Glide.with(getContext())
-                                .load(profile.getUrl())
-                                .transform(new RoundedCorners(150))
-                                .into(profileBinding.ivProfile);
-                    }
-                } else {
-                    Toasty.warning(getContext(), "Some data unavailable", Toast.LENGTH_SHORT).show();
-                }
+        try {
+            user = user.fetchIfNeeded();
+            profileBinding.tvLocation.setText(parseGeoPointToDMS(user.getParseGeoPoint(MapsFragment.KEY_LOCATION)));
+            profileBinding.etRadius.setText(user.getDouble(KEY_RADIUS) + "");
+            profileBinding.tvNumTagsDropped.setText(Integer.toString(user.getInt(NUM_TAGS_DROPPED)));
+            profileBinding.etRadius.addTextChangedListener(watcher);
 
-                profileBinding.tvLocation.setText(parseGeoPointToDMS(user.getParseGeoPoint(MapsFragment.KEY_LOCATION)));
-                profileBinding.etRadius.setText(user.getDouble(KEY_RADIUS) + "");
-                profileBinding.tvNumTagsDropped.setText(Integer.toString(user.getInt(NUM_TAGS_DROPPED)));
-                profileBinding.etRadius.addTextChangedListener(watcher);
-            }
-        });
+        } catch (ParseException e) {
+            Toasty.warning(getContext(), "Data is not up to date", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "user not updated", e);
+        }
     }
 
     @Override
@@ -264,6 +262,8 @@ public class ProfileFragment extends Fragment {
         }
 
         if (bmp != null) {
+            bmp = BitmapScaler.scaleToFitWidth(bmp, 500); // resized smaller
+            bmp = bmp.copy(Bitmap.Config.ARGB_8888, true);
             // set image into profile pic view
             Glide.with(getContext())
                     .load(bmp)
@@ -271,11 +271,11 @@ public class ProfileFragment extends Fragment {
                     .into(profileBinding.ivProfile);
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bmp.compress(Bitmap.CompressFormat.PNG, 50, stream);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 40, stream);
             byte[] byteArray = stream.toByteArray();
 
             // save photo to user in Parse database
-            final ParseFile pf = new ParseFile("profile_pic.jpg", byteArray);
+            final ParseFile pf = new ParseFile(photoFileName, byteArray);
             pf.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {

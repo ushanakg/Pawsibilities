@@ -10,9 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.pawsibilities.databinding.ItemTagBinding;
 import com.example.pawsibilities.fragments.DetailedTagDialogFragment;
 import com.example.pawsibilities.fragments.MapsFragment;
+import com.parse.ParseFile;
 import com.parse.ParseUser;
 
 import java.util.Collections;
@@ -120,6 +124,13 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder> {
         private void bind(Tag t) {
             tag = t;
             binding.tvName.setText(t.getName());
+            ParseFile profile = tag.getPhoto();
+            if (profile != null) {
+                Glide.with(context)
+                        .load(profile.getUrl())
+                        .circleCrop()
+                        .into(binding.ivTag);
+            }
             binding.tvDistance.setText(t.distanceFrom(ParseUser.getCurrentUser()
                     .getParseGeoPoint(MapsFragment.KEY_LOCATION)) + context.getString(R.string.milesaway));
             binding.tvWalk.setText(t.getWalkingTime());
