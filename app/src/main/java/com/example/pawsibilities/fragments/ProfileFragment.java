@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.example.pawsibilities.BitmapScaler;
 import com.example.pawsibilities.LoginActivity;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
@@ -253,7 +254,6 @@ public class ProfileFragment extends Fragment {
 
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                Bitmap takenImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
                 bmp = CreateTagDialogFragment.rotateBitmapOrientation(photoFile.getAbsolutePath());
             } else {
                 Toasty.warning(getContext(), "No photo taken", Toast.LENGTH_SHORT).show();
@@ -262,6 +262,7 @@ public class ProfileFragment extends Fragment {
         }
 
         if (bmp != null) {
+            bmp = BitmapScaler.scaleToFitWidth(bmp, 500); // resized smaller
             bmp = bmp.copy(Bitmap.Config.ARGB_8888, true);
             // set image into profile pic view
             Glide.with(getContext())
@@ -270,11 +271,11 @@ public class ProfileFragment extends Fragment {
                     .into(profileBinding.ivProfile);
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bmp.compress(Bitmap.CompressFormat.PNG, 50, stream);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 40, stream);
             byte[] byteArray = stream.toByteArray();
 
             // save photo to user in Parse database
-            final ParseFile pf = new ParseFile("profile_pic.jpg", byteArray);
+            final ParseFile pf = new ParseFile(photoFileName, byteArray);
             pf.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {

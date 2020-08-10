@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.example.pawsibilities.BitmapScaler;
 import com.example.pawsibilities.R;
 import com.example.pawsibilities.Tag;
 import com.example.pawsibilities.databinding.FragmentCreateTagBinding;
@@ -32,7 +33,10 @@ import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import es.dmoral.toasty.Toasty;
@@ -126,6 +130,22 @@ public class CreateTagDialogFragment extends CircularRevealDialogFragment {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Bitmap takenImage = rotateBitmapOrientation(photoFile.getAbsolutePath());
+
+                // resize image and write to file
+                takenImage = BitmapScaler.scaleToFitWidth(takenImage, 300); // resized smaller
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                takenImage.compress(Bitmap.CompressFormat.JPEG, 40, stream);
+                FileOutputStream fos = null;
+                try {
+                    fos = new FileOutputStream(photoFile);
+                    fos.write(stream.toByteArray());
+                    fos.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
 
                 Glide.with(getContext())
                         .load(takenImage)
