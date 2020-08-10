@@ -64,6 +64,7 @@ public class ProfileFragment extends Fragment {
     public final static String NUM_TAGS_DROPPED = "numTagsDropped";
     public final static String KEY_RADIUS = "radius";
 
+    private TextWatcher watcher;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -84,7 +85,7 @@ public class ProfileFragment extends Fragment {
         detector = new GestureDetector(getContext(), new GestureListener());
         user = ParseUser.getCurrentUser();
 
-        final TextWatcher watcher = new TextWatcher() {
+        watcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
@@ -113,32 +114,9 @@ public class ProfileFragment extends Fragment {
             }
         };
 
-        ParseQuery<ParseUser> query = ParseQuery.getQuery(ParseUser.class);
-        query.whereEqualTo("objectId", ParseUser.getCurrentUser().getObjectId());
-        query.findInBackground(new FindCallback<ParseUser>() {
-            @Override
-            public void done(List<ParseUser> objects, ParseException e) {
-                if (objects != null) {
-                    user = objects.get(0);
-                    ParseFile profile = user.getParseFile(KEY_PROFILE);
-                    if (profile != null) {
-                        Glide.with(getContext())
-                                .load(profile.getUrl())
-                                .transform(new RoundedCorners(150))
-                                .into(profileBinding.ivProfile);
-                    }
-                }
+        queryUser();
 
-                profileBinding.etRadius.setText(user.getDouble(KEY_RADIUS) + "");
-                profileBinding.etRadius.addTextChangedListener(watcher);
-            }
-        });
-
-        // display user info
         profileBinding.tvUsername.setText(user.getUsername());
-        profileBinding.tvNumTagsDropped.setText(Integer.toString(user.getInt(NUM_TAGS_DROPPED)));
-        profileBinding.tvLocation.setText(parseGeoPointToDMS(user.getParseGeoPoint(MapsFragment.KEY_LOCATION)));
-
 
         profileBinding.ivProfile.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -168,6 +146,40 @@ public class ProfileFragment extends Fragment {
         });
 
         queryTag();
+    }
+
+
+    private void queryUser() {
+        ParseQuery<ParseUser> query = ParseQuery.getQuery(ParseUser.class);
+        query.whereEqualTo("objectId", ParseUser.getCurrentUser().getObjectId());
+        query.findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> objects, ParseException e) {
+                if (objects != null) {
+                    user = objects.get(0);
+                    ParseFile profile = user.getParseFile(KEY_PROFILE);
+                    if (profile != null) {
+                        Glide.with(getContext())
+                                .load(profile.getUrl())
+                                .transform(new RoundedCorners(150))
+                                .into(profileBinding.ivProfile);
+                    }
+                } else {
+                    Toasty.warning(getContext(), "Some data unavailable", Toast.LENGTH_SHORT).show();
+                }
+
+                profileBinding.tvLocation.setText(parseGeoPointToDMS(user.getParseGeoPoint(MapsFragment.KEY_LOCATION)));
+                profileBinding.etRadius.setText(user.getDouble(KEY_RADIUS) + "");
+                profileBinding.tvNumTagsDropped.setText(Integer.toString(user.getInt(NUM_TAGS_DROPPED)));
+                profileBinding.etRadius.addTextChangedListener(watcher);
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        queryUser();
     }
 
     private String parseGeoPointToDMS(ParseGeoPoint p) {
