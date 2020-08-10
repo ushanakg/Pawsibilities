@@ -20,12 +20,12 @@
 
         <ImageView
             android:id="@+id/ivTag"
-            android:layout_width="45dp"
+            android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_alignParentStart="true"
             android:layout_marginStart="4dp"
-            android:tint="@color/orange"
-            app:srcCompat="@drawable/map_marker" />
+            android:padding="8dp"
+            app:srcCompat="@drawable/dog" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -71,7 +71,7 @@
                 android:id="@+id/ivWalk"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_gravity="center_horizontal"
+                android:layout_gravity="right"
                 android:tint="@color/dusty_blue"
                 app:srcCompat="@drawable/ic_baseline_directions_walk_24" />
 
@@ -84,7 +84,7 @@
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/dark_grey"
                 android:textSize="12sp"
-                tools:text="1 min" />
+                tools:text="1 hour 23 min" />
         </LinearLayout>
 
     </RelativeLayout>

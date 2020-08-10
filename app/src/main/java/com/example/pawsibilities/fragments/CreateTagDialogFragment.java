@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -15,6 +15,7 @@ import androidx.core.content.FileProvider;
 
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -141,13 +142,17 @@ public class CreateTagDialogFragment extends CircularRevealDialogFragment {
         // Use `getExternalFilesDir` on Context to access package-specific directories.
         File mediaStorageDir = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
 
+        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
+            Log.d(TAG, "failed to create directory");
+        }
+
         // Return the file target for the photo based on filename
         return new File(mediaStorageDir.getPath() + File.separator + fileName);
     }
 
     private void launchCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        photoFile = CreateTagDialogFragment.getPhotoFileUri(getContext(), photoFileName);
+        photoFile = getPhotoFileUri(getContext(), photoFileName);
 
         // wrap File object into a content provider
         Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.codepath.fileprovider", photoFile);
@@ -164,14 +169,14 @@ public class CreateTagDialogFragment extends CircularRevealDialogFragment {
         BitmapFactory.Options bounds = new BitmapFactory.Options();
         bounds.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(photoFilePath, bounds);
-        BitmapFactory.Options opts = new BitmapFactory.Options();
-        Bitmap bm = BitmapFactory.decodeFile(photoFilePath, opts);
+        Bitmap bm = BitmapFactory.decodeFile(photoFilePath);
+
         // Read EXIF Data
         ExifInterface exif = null;
         try {
             exif = new ExifInterface(photoFilePath);
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "ExifInterface issue", e);
         }
         String orientString = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
         int orientation = orientString != null ? Integer.parseInt(orientString) : ExifInterface.ORIENTATION_NORMAL;
